@@ -1,10 +1,7 @@
 /*
- * The theme menu's arrangement, never the baseline's layers: theme-menu.ts imports it as a CSS
- * module script and adopts it onto the document once, in foundation.theme-menu, which both page
- * entries order after foundation.utilities, so it falls under every consumer layer and unlayered
- * CSS. It reads the baseline's tokens for every space, line, radius, color, and font, and
- * hard-codes none; its fixed lengths are layout: the dialog's widest size, the breakpoint, a
- * value's width, and the 1px box that hides a radio visually.
+ * The theme menu's arrangement, adopted by theme-menu.ts in foundation.theme-menu, under every
+ * consumer layer. It reads the tokens for every space, line, radius, color, and font; its fixed
+ * lengths are layout: the dialog's cap, the breakpoint, a value's width, and the hidden 1px box.
  * Adapted from spike-html-design (fe75220): modules/theme-menu.js.
  */
 

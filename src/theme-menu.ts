@@ -1,28 +1,7 @@
-// The theming menu, loaded by <sl-theme-menu> the first time it opens, never before first paint. It
-// builds, inside the element, in light DOM so the baseline's elements layer styles it, a modal
-// native <dialog> holding one row per section, in order: the color profile, the scheme, space, and
-// type; a live preview beside them; and Save and Cancel.
-//
-// Each row is a native radio group, a fieldset with a legend and a radio per name the registry
-// lists for that facet (the scheme's are system, light, dark), drawn as ◀ current value ▶: the
-// other options' radios and labels are hidden visually but stay in the group, so a screen reader
-// announces the value's place among them. Every change applies at once to the preview and the
-// page. Save and T store the selection once and close; Cancel and Escape restore what applied when
-// the menu opened, or the stored value when another tab saved meanwhile, store nothing, and close.
-// A backdrop click does nothing.
-//
-// Keys, each stopped at the dialog so no page-wide listener sees it: Up/Down and k/j move between
-// rows; Left/Right cycle a row natively, h/l cycle it the same way, wrapping; Tab is one stop per
-// row, as a radio group is; t/T saves; Escape cancels. A held key repeats a move, as a native arrow
-// does, but never Save or Cancel: a repeated t/T or Escape is stopped and does nothing, so holding
-// the T that opened the menu doesn't save it.
-//
-// T inside the menu is the menu's own key, as Escape is, not a keys.js binding: focus sits on a
-// radio, a field where keys is silent, and the menu stops T at the dialog, so a press saves once.
-// Save's aria-keyshortcuts="T" is written here for the same reason, and Save carries no data-keys.
-//
-// The menu's arrangement is its own sheet, theme-menu.css, a CSS module script adopted onto the
-// document once, in the layer foundation.theme-menu.
+// The theme menu, which <sl-theme-menu> loads on its first open: a modal native <dialog> in light
+// DOM, so the elements layer styles it, with a radio row each for color, scheme, space, and type, a
+// live preview, and Save and Cancel. Every change applies at once to the preview and the page. Its
+// sheet, theme-menu.css, is adopted onto the document once, in the layer foundation.theme-menu.
 // Adapted from spike-html-design (fe75220): modules/theme-menu.js.
 
 import { ATTRIBUTES, apply, KEY, read, SCHEMES, save, setOpen } from "./preferences.ts";
@@ -119,8 +98,9 @@ function build(element: HTMLElement, choice: Choice): HTMLDialogElement {
 }
 
 /** A section's radio group, named name, its radios listing the section's options, the one at value
- * checked. Names come from whatever registered them, so they are set as text and attribute values,
- * never parsed as markup. */
+ * checked. Each is drawn as ◀ value ▶, the other radios and labels hidden visually but kept in the
+ * group, so a screen reader announces the value's place among them. Names come from whatever
+ * registered them, so they are set as text and attribute values, never parsed as markup. */
 function row(name: string, key: Key, legend: string, value: string): HTMLFieldSetElement {
   const fieldset = document.createElement("fieldset");
   fieldset.className = "theme-menu-row";
@@ -210,7 +190,12 @@ function close(element: HTMLElement, accepted: boolean): void {
   menu.dialog.remove();
 }
 
-/** Handles the keys the menu owns and stops each at the dialog. */
+/**
+ * Handles the keys the menu owns and stops each at the dialog, so no page-wide listener sees one.
+ * A held key repeats a move, as a native arrow does, but never Save or Cancel, so holding the T
+ * that opened the menu doesn't save it. T is the menu's own key, as Escape is, not a keys.js
+ * binding: focus sits on a radio, a field where keys is silent, so Save carries no data-keys.
+ */
 function onkey(element: HTMLElement, event: KeyboardEvent): void {
   const menu = menus.get(element);
   if (!menu || event.ctrlKey || event.altKey || event.metaKey) return;
@@ -247,9 +232,7 @@ function onkey(element: HTMLElement, event: KeyboardEvent): void {
   event.stopPropagation();
 }
 
-/** Opens the menu inside element, built from the registry as it is now, with what applies to the
- * root checked, shown modal with the first row focused, and marks it open (setOpen), so another
- * tab's save waits on the menu's Save or Cancel. */
+/** Opens the menu inside element, from the registry as it is now, checked at what applies. */
 export function open(element: HTMLElement): void {
   if (menus.has(element)) return;
   adopt();
@@ -281,6 +264,7 @@ export function open(element: HTMLElement): void {
   });
 
   element.append(dialog);
+  // Marked open, another tab's save waits on the menu's Save or Cancel.
   setOpen(true);
   element.toggleAttribute("data-open", true);
   dialog.showModal();

@@ -1,12 +1,7 @@
 /*
- * The foundation's full page entry: everything page.css holds, and every other profile, Primer,
- * Catppuccin, and Everforest for color, compact for space, and sans for type, so a page selects
- * any of them with data-palette, data-space, or data-type. It is a plain aggregator: the facets'
- * contract sheets, each built-in unit's sheet from profiles/, and the rest of the foundation, and
- * nothing a profile needs that its unit lacks. It is self-contained, not an add-on to page.css: a
- * page links one entry, never both, and imports the registration module that matches it,
- * register-full.js for this one. Each facet's profiles follow its default in its sub-layer, so an
- * attribute on the root overrides the default's block of equal, zero specificity by order alone.
+ * The foundation's full page entry: everything page.css holds and every other built-in unit's
+ * sheet, each facet's after its default in its sub-layer, so an attribute on the root selects one
+ * by order alone. A plain aggregator, self-contained: a page links it or page.css, never both.
  * Adapted from spike-html-design (fe75220): full.css.
  */
 
