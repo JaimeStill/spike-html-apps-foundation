@@ -19,7 +19,7 @@ export const DEFAULTS: Readonly<Record<Facet, string>> = Object.freeze({
 });
 
 /** The store's well-known global key, shared by every copy of the module. */
-const KEY = Symbol.for("spike-html-design.registry");
+const KEY = Symbol.for("spike-html-apps-foundation.registry");
 const scope = globalThis as typeof globalThis & Record<symbol, Store | undefined>;
 scope[KEY] ??= { color: [], space: [], type: [] };
 const store: Store = scope[KEY];
