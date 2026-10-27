@@ -2,7 +2,6 @@
 // exports and against its license, by release.js's releaseProblems, as it stands and in scratch
 // copies with one fault each. It packs the dist/ that mise run build writes.
 // From spike-html-packages-foundation (5dd8a58): test/unit/release.test.js.
-// Adapted from spike-html-packages (7fb31a8): test/unit/release.test.js, on a pack of one package.
 
 import assert from "node:assert/strict";
 import { execFileSync } from "node:child_process";

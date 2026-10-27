@@ -2,7 +2,6 @@
 // computes the same, at rest and hovered, and dropping any one declaration shows. The page entry's
 // layer order and default profiles are read from the same page.
 // From spike-html-packages-foundation (5dd8a58): test/browser/tools.test.js.
-// Adapted from spike-html-conventions (a88828a): scripts/browser.test.js.
 
 import assert from "node:assert/strict";
 import { readFileSync } from "node:fs";

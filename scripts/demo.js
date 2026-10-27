@@ -1,7 +1,6 @@
 // mise run demo: serves the repository through the browser tier's static server and prints the
 // demo pages' URLs, which load dist/, until Ctrl-C.
 // From spike-html-packages-foundation (5dd8a58): scripts/demo.js.
-// Adapted from spike-html-packages (7fb31a8): scripts/demo.js, without the components page.
 
 import { serve } from "../test/browser/support/server.js";
 

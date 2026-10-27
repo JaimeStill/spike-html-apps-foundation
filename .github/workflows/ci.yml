@@ -1,4 +1,4 @@
-# From spike-html-packages-foundation (5dd8a58): .github/workflows/ci.yml.
+# Adapted from spike-html-packages-foundation (5dd8a58): .github/workflows/ci.yml, its pins current.
 
 name: CI
 

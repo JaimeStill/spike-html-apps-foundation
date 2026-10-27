@@ -1,7 +1,6 @@
 // The layer's import rules: eslint.config.js run over test/unit/layers-tree.js's tree, passing only
 // when ESLint flags exactly the files that break a rule, each with exactly the rules its case names.
 // From spike-html-packages-foundation (5dd8a58): test/unit/layers.test.js.
-// Adapted from spike-html-packages (7fb31a8): test/unit/layers.test.js, cut to the foundation.
 
 import assert from "node:assert/strict";
 import { spawnSync } from "node:child_process";

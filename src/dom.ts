@@ -1,6 +1,5 @@
 // The foundation's DOM helpers: the platform alone, no package and no other layer.
 // From spike-html-packages-foundation (5dd8a58): src/dom.ts.
-// From spike-html-conventions (a88828a): layers/foundation/dom.ts.
 
 /** Defines a custom element once, so a second import of its module is harmless. */
 export function define(tag: string, element: CustomElementConstructor): void {

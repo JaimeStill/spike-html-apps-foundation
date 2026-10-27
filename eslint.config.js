@@ -1,8 +1,6 @@
 // The lint the check runs: the recommended rules, the layer's imports in src/, and every .css
 // import a CSS module script. test/unit/layers.test.js runs it over test/unit/layers-tree.js.
 // From spike-html-packages-foundation (5dd8a58): eslint.config.js.
-// Adapted from spike-html-conventions (a88828a): eslint.config.js, its layer table cut to the
-// foundation.
 
 import js from "@eslint/js";
 import { defineConfig } from "eslint/config";

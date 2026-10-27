@@ -2,7 +2,6 @@
 # Fails naming mise run install when a tool a task needs is missing: the node_modules tooling, and
 # with `browser`, the pinned chrome-headless-shell.
 # From spike-html-packages-foundation (5dd8a58): scripts/preflight.sh.
-# Adapted from spike-html-packages (7fb31a8): scripts/preflight.sh, without lit.
 set -euo pipefail
 
 fail() {

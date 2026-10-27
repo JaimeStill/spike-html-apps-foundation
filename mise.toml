@@ -1,5 +1,4 @@
-# Adapted from spike-html-packages-foundation (5dd8a58): mise.toml.
-# Adapted from spike-html-packages (7fb31a8): mise.toml, cut to one layer.
+# Adapted from spike-html-packages-foundation (5dd8a58): mise.toml, renamed.
 # Tasks never install a missing tool; mise run install is the one task that reads the network.
 [settings]
 task.run_auto_install = false

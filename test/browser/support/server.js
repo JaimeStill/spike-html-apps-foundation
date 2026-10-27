@@ -2,7 +2,6 @@
 // the loopback address, every file sent as it is on disk. The pages load the package's built dist/,
 // so nothing needs transforming.
 // From spike-html-packages-foundation (5dd8a58): test/browser/support/server.js.
-// Adapted from spike-html-packages (7fb31a8): test/browser/support/server.js, without lit's /deps/.
 
 import { readFile } from "node:fs/promises";
 import { createServer } from "node:http";

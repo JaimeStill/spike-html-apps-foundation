@@ -1,7 +1,6 @@
 // The keys family's binding grammar, with no DOM: @github/hotkey's, with a letter matching either
 // case unless Shift is written and a symbol written as the character typed, Shift ignored.
 // From spike-html-packages-foundation (5dd8a58): src/keys-grammar.ts.
-// Adapted from spike-html-design v0.7.0 (fe75220): modules/keys-grammar.js.
 
 /** One press: the `event.key` it matches, and whether each modifier is held. */
 export interface Press {

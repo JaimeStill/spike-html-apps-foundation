@@ -2,7 +2,6 @@
  * The foundation's meta sheet: buttons and their hue variants. Self-layered and importing nothing,
  * so a shadow root adopts it alone.
  * From spike-html-packages-foundation (5dd8a58): src/meta.css.
- * Adapted from spike-html-design v0.7.0 (fe75220): layers/tools.css.
  */
 
 @layer foundation.meta {

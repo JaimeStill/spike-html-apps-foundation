@@ -1,6 +1,5 @@
 // The keys family's binding grammar, on src/keys-grammar.ts as node runs it.
 // From spike-html-packages-foundation (5dd8a58): test/unit/keys-grammar.test.js.
-// Adapted from spike-html-design v0.7.0 (fe75220): test/keys-grammar.test.js, on node:test.
 
 import assert from "node:assert/strict";
 import { describe, test } from "node:test";

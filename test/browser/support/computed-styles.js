@@ -2,7 +2,6 @@
 // style. Each export returns plain JSON for evaluate(); differences() also runs on node. :hover is
 // forced from outside, through the DevTools Protocol, so a reading takes the page as it is.
 // From spike-html-packages-foundation (5dd8a58): test/browser/support/computed-styles.js.
-// From spike-html-packages (7fb31a8): test/browser/support/computed-styles.js.
 
 /** The three lateral-concern sheets, by file name. */
 export const concerns = ["meta", "structure", "utilities"];

@@ -2,7 +2,6 @@
 // register() binds a handler. One store at a well-known global key is shared by every copy, and
 // the first copy to load installs the one listener, so a key never fires twice.
 // From spike-html-packages-foundation (5dd8a58): src/keys.ts.
-// Adapted from spike-html-design v0.7.0 (fe75220): modules/keys.js.
 
 import type * as Help from "./keys-help.ts";
 import { keyshortcuts, matches, normalize, parse, problem, stringify } from "./keys-grammar.ts";

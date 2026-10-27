@@ -1,7 +1,6 @@
 // The browser tier's driver: chrome-headless-shell over the DevTools Protocol on a pipe, with no
 // package between.
 // From spike-html-packages-foundation (5dd8a58): test/browser/support/browser-pipe.js.
-// Adapted from spike-html-conventions (a88828a): scripts/browser-pipe.js.
 
 import { spawn } from "node:child_process";
 import { mkdtempSync, rmSync } from "node:fs";

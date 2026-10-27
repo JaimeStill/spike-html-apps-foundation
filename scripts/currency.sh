@@ -3,7 +3,6 @@
 # Actions pin behind its latest, and exits 1 if any; prints nothing when all are current. Reads the
 # network.
 # From spike-html-packages-foundation (5dd8a58): scripts/currency.sh.
-# Adapted from spike-html-packages (7fb31a8): scripts/currency.sh, with go-core's action pins.
 set -euo pipefail
 cd "$(dirname "$0")/.."
 

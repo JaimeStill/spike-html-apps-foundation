@@ -2,7 +2,6 @@
 # The build: src/ into a fresh dist/. tsc emits each module's .js and .d.ts, and the .css and the
 # handwritten .d.ts are copied beside them as written.
 # From spike-html-packages-foundation (5dd8a58): scripts/build.sh.
-# Adapted from spike-html-packages (7fb31a8): scripts/build.sh, cut to one layer.
 set -euo pipefail
 cd "$(dirname "$0")/.."
 

@@ -1,7 +1,6 @@
 // The keys help dialog's contents: the bindings table, the reader's settings, and a screen-reader
 // note, filled into each [data-keys-list] of a dialog as it opens. keys.ts loads it lazily.
 // From spike-html-packages-foundation (5dd8a58): src/keys-help.ts.
-// Adapted from spike-html-design v0.7.0 (fe75220): modules/keys-help.js.
 
 import { bindings, changeSettings, settings, WAITS } from "./keys.ts";
 import type { Listed } from "./keys.ts";

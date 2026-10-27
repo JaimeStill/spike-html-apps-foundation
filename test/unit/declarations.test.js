@@ -1,7 +1,6 @@
 // The foundation's formatters are declarations alone, and tsc, under tsconfig.json, refuses runtime
 // code in a declaration file, run against scratch trees.
 // From spike-html-packages-foundation (5dd8a58): test/unit/declarations.test.js.
-// From spike-html-conventions (a88828a): test/declarations.test.js.
 
 import assert from "node:assert/strict";
 import { spawnSync } from "node:child_process";

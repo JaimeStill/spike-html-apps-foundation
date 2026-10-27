@@ -2,7 +2,6 @@
  * The foundation's utilities sheet: scroll and table classes. Self-layered and importing nothing,
  * so a shadow root adopts it alone.
  * From spike-html-packages-foundation (5dd8a58): src/utilities.css.
- * Adapted from spike-html-design v0.7.0 (fe75220): layers/tools.css.
  */
 
 @layer foundation.utilities {

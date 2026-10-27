@@ -1,6 +1,5 @@
 // The foundation's Intl formatters, declared; spike-html-apps implements them.
 // From spike-html-packages-foundation (5dd8a58): src/format.d.ts.
-// From spike-html-conventions (a88828a): layers/foundation/format.d.ts.
 
 /** Options for formatBytes: Intl.NumberFormat's, less its style and unit, which it sets. */
 export type BytesOptions = Omit<Intl.NumberFormatOptions, "style" | "unit">;
