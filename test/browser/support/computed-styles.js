@@ -1,7 +1,7 @@
 // The tools cases' in-page half: imported into demo/tools.html, it reads every element's computed
 // style. Each export returns plain JSON for evaluate(); differences() also runs on node. :hover is
 // forced from outside, through the DevTools Protocol, so a reading takes the page as it is.
-// From spike-html-packages-foundation (5dd8a58): test/browser/support/computed-styles.js.
+// Adapted from spike-html-packages-foundation (5dd8a58): test/browser/support/computed-styles.js.
 
 /** The three lateral-concern sheets, by file name. */
 export const concerns = ["meta", "structure", "utilities"];
@@ -21,6 +21,25 @@ function* rules(list) {
 /** Every rule of every sheet the document has. */
 const allRules = () => [...document.styleSheets].flatMap((sheet) => [...rules(sheet.cssRules)]);
 
+/** Each facet's profile attribute. */
+const attributes = { color: "data-palette", space: "data-space", type: "data-type" };
+
+/** The profiles the page's sheets define, per facet, by the names their selectors match, in order. */
+export function defined() {
+  const out = Object.fromEntries(Object.keys(attributes).map((facet) => [facet, []]));
+  for (const rule of allRules()) {
+    if (!(rule instanceof CSSStyleRule)) continue;
+    for (const [facet, attribute] of Object.entries(attributes)) {
+      for (const [, name] of rule.selectorText.matchAll(
+        new RegExp(`\\[${attribute}="([^"]+)"\\]`, "g"),
+      )) {
+        if (!out[facet].includes(name)) out[facet].push(name);
+      }
+    }
+  }
+  return out;
+}
+
 /** Points the page's stylesheet link at the URL, resolving once it and its imports have loaded. */
 export async function useSheets(href) {
   const link = document.querySelector('link[rel="stylesheet"]');
@@ -32,6 +51,27 @@ export async function useSheets(href) {
   await loaded;
   const missing = allRules().filter((rule) => rule instanceof CSSImportRule && !rule.styleSheet);
   if (missing.length > 0) throw new Error(`no sheet for ${missing.map((r) => r.href).join(", ")}`);
+}
+
+/**
+ * Names a profile and a scheme on the page. The scheme's data-scheme goes on the root. The
+ * profile's attribute goes on the root, or, given `sentinels`, on the body, with every token named
+ * there set on the root to a value no profile holds, by an unlayered adopted sheet that beats every
+ * layer: the body then shows each token its profile declares itself, and none it inherits from the
+ * default's block.
+ */
+export function scope({ attribute, name, scheme, sentinels }) {
+  const root = document.documentElement;
+  if (scheme) root.setAttribute("data-scheme", scheme);
+  if (!attribute) return;
+  if (!sentinels) {
+    root.setAttribute(attribute, name);
+    return;
+  }
+  const sheet = new CSSStyleSheet();
+  sheet.replaceSync(`:root { ${sentinels.map((token) => `${token}: sentinel;`).join(" ")} }`);
+  document.adoptedStyleSheets = [sheet];
+  document.body.setAttribute(attribute, name);
 }
 
 /** Every element's computed properties, each element named by its position, tag, and classes. */
@@ -84,15 +124,16 @@ function declarations(cssText) {
 }
 
 /**
- * Drops each declaration of the lateral-concern sheets in turn, and counts how many differences
- * from the reference reading its absence makes.
+ * Drops each declaration of the imported sheets whose URLs end in one of the suffixes, the
+ * lateral-concern sheets by default, in turn, and counts how many differences from the reference
+ * reading its absence makes.
  */
-export function drops(reference) {
+export function drops(reference, suffixes = concerns.map((concern) => `/${concern}.css`)) {
   const tried = [];
   const sheets = allRules()
     .filter((rule) => rule instanceof CSSImportRule && rule.styleSheet)
     .map((rule) => rule.styleSheet)
-    .filter((sheet) => concerns.some((concern) => sheet.href.endsWith(`/${concern}.css`)));
+    .filter((sheet) => suffixes.some((suffix) => sheet.href.endsWith(suffix)));
   for (const sheet of sheets) {
     for (const rule of rules(sheet.cssRules)) {
       if (!(rule instanceof CSSStyleRule)) continue;

@@ -76,7 +76,7 @@ description = "Install the pins and node_modules; reads the network"
 run = ["mise install", "pnpm install --frozen-lockfile"]
 
 [tasks.demo]
-description = "Serve the tools, keys, and format demo pages, on dist/, on the loopback address"
+description = "Serve the tools, profiles, keys, and format demo pages, on dist/, on the loopback address"
 depends = ["build"]
 run = "node scripts/demo.js"
 

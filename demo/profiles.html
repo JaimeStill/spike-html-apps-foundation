@@ -1,0 +1,69 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>foundation profiles</title>
+    <!-- The tools page, demo/tools.html, on the full page entry, switched through every profile by
+         attribute: data-palette, data-space, data-type, and data-scheme on its root. The tools page
+         itself stays as the browser tier compares it, on page.css with no attribute: this page
+         loads it in a frame, points the frame's link at page-full.css, and sets the attributes
+         there. The switches list the profiles register-full.js registers. Its module runs served
+         only: mise run demo. -->
+    <link rel="stylesheet" href="../dist/page-full.css" />
+    <script type="module">
+      import "../dist/register-full.js";
+      import { DEFAULTS, profiles } from "../dist/registry.js";
+
+      const frame = document.querySelector("iframe");
+      // Each switch, by the attribute it sets: a facet's registered profiles, or the schemes,
+      // where the empty value removes the attribute and the page follows the system.
+      const switches = {
+        "data-palette": profiles("color"),
+        "data-space": profiles("space"),
+        "data-type": profiles("type"),
+        "data-scheme": ["", "light", "dark"],
+      };
+      const defaults = { "data-palette": DEFAULTS.color, "data-space": DEFAULTS.space, "data-type": DEFAULTS.type };
+
+      for (const [attribute, names] of Object.entries(switches)) {
+        const select = document.querySelector(`select[name="${attribute}"]`);
+        select.append(...names.map((name) => new Option(name || "system", name, false, name === (defaults[attribute] ?? ""))));
+        select.addEventListener("change", apply);
+      }
+
+      // Sets every switch's attribute on the frame's root, the default profile's too.
+      function apply() {
+        const root = frame.contentDocument.documentElement;
+        for (const attribute of Object.keys(switches)) {
+          const value = document.querySelector(`select[name="${attribute}"]`).value;
+          if (value) root.setAttribute(attribute, value);
+          else root.removeAttribute(attribute);
+        }
+      }
+
+      // The tools page links page.css, which ships the defaults only: its link moves to the full
+      // entry, and the attributes are set once that entry has loaded.
+      function load() {
+        const link = frame.contentDocument.querySelector('link[rel="stylesheet"]');
+        link.addEventListener("load", apply, { once: true });
+        link.href = "../dist/page-full.css";
+      }
+      frame.addEventListener("load", load);
+      if (frame.contentDocument?.readyState === "complete" && frame.contentDocument.URL.endsWith("tools.html")) load();
+    </script>
+  </head>
+  <body>
+    <main>
+      <h1>Foundation profiles</h1>
+      <p>The tools page on page-full.css, through each profile of each facet, in either scheme.</p>
+      <p>
+        <label>Palette <select name="data-palette"></select></label>
+        <label>Space <select name="data-space"></select></label>
+        <label>Type <select name="data-type"></select></label>
+        <label>Scheme <select name="data-scheme"></select></label>
+      </p>
+      <iframe src="tools.html" title="The tools page" style="inline-size: 100%; block-size: 70vb"></iframe>
+    </main>
+  </body>
+</html>

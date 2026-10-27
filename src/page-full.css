@@ -1,0 +1,30 @@
+/*
+ * The foundation's full page entry: everything page.css holds, and every other profile, Primer,
+ * Catppuccin, and Everforest for color, compact for space, and sans for type, so a page selects
+ * any of them with data-palette, data-space, or data-type. It is self-contained, not an add-on to
+ * page.css: a page links one entry, never both, and imports the registration module that matches
+ * it, register-full.js for this one. Each facet's profiles follow its default in its sub-layer, so
+ * an attribute on the root overrides the default's block of equal, zero specificity by order alone.
+ * Adapted from spike-html-design (fe75220): full.css.
+ */
+
+/* Comes first to fix the order, and names the same layers as page.css's, in the same order. */
+
+@layer foundation.tokens.color, foundation.tokens.space, foundation.tokens.type, foundation.reset, foundation.elements, foundation.meta, foundation.structure, foundation.utilities;
+
+@import url(./baseline/tokens/color.css);
+@import url(./baseline/tokens/color/flexoki.css);
+@import url(./baseline/tokens/color/primer.css);
+@import url(./baseline/tokens/color/catppuccin.css);
+@import url(./baseline/tokens/color/everforest.css);
+@import url(./baseline/tokens/space.css);
+@import url(./baseline/tokens/space/regular.css);
+@import url(./baseline/tokens/space/compact.css);
+@import url(./baseline/tokens/type.css);
+@import url(./baseline/tokens/type/mono.css);
+@import url(./baseline/tokens/type/sans.css);
+@import url(./baseline/reset.css);
+@import url(./baseline/elements.css);
+@import url(./meta.css);
+@import url(./structure.css);
+@import url(./utilities.css);
