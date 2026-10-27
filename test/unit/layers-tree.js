@@ -1,8 +1,7 @@
 // The layer's import cases as one file tree in the repository's shape: a file per forbidden import
 // and form, each with the rules that catch it, and the imports the layer may make in the same
 // layout. layers.test.js lints it.
-// From spike-html-packages-foundation (5dd8a58): test/unit/layers-tree.js.
-// Adapted from spike-html-packages (7fb31a8): test/unit/layers-tree.js, cut to the foundation.
+// Adapted from spike-html-packages-foundation (5dd8a58): test/unit/layers-tree.js, renamed.
 
 import { spawnSync } from "node:child_process";
 import { mkdirSync, readFileSync, symlinkSync, writeFileSync } from "node:fs";
@@ -15,10 +14,9 @@ const root = join(import.meta.dirname, "../..");
 export const manifest = JSON.parse(readFileSync(join(root, "package.json"), "utf8"));
 const foundation = manifest.name;
 
-/** The sibling layers and the one package of spike-html-apps, which the foundation never
- * imports. */
+/** The sibling layers and spike-html-apps' app, which the foundation never imports. */
 const siblings = ["components", "sdk"].map((layer) => foundation.replace(/foundation$/, layer));
-const one = foundation.replace(/-foundation$/, "");
+const app = foundation.replace(/-foundation$/, "");
 
 // The rules a case names: the layer table, the two manifest rules, and the CSS module script rule.
 export const table = "boundaries/dependencies";
@@ -55,7 +53,7 @@ export const violations = {
     ...forms("src/forms/lit", "lit"),
     ...forms("src/forms/components", `${siblings[0]}/status-badge.js`),
     ...forms("src/forms/sdk", `${siblings[1]}/client.js`),
-    "src/one.ts": `import { define } from "${one}/foundation/dom.js";`,
+    "src/app.ts": `import { define } from "${app}/main.js";`,
     ...forms("src/forms/typescript", "typescript"),
     ...forms("src/forms/self-name", `${foundation}/dom.js`),
   }),
@@ -125,9 +123,9 @@ const targets = {
   "dist/dom.d.ts": "export interface X {}",
 };
 
-/** The packages the cases name, as stubs in node_modules/: lit, the siblings, the one package,
+/** The packages the cases name, as stubs in node_modules/: lit, the siblings, the app,
  * and typescript, a devDependency, each a module and its types at every subpath. */
-const externals = ["lit", ...siblings, one, "typescript"];
+const externals = ["lit", ...siblings, app, "typescript"];
 const stub = (name) => ({
   "package.json": JSON.stringify({
     name,
