@@ -53,7 +53,7 @@ const policies = layers.map(({ name, may }) => ({
   allow: { to: may.map((target) => ({ element: { type: target } })) },
 }));
 
-// A declaration file (src/format.d.ts) has no runtime, so an import that resolves to one passes
+// A declaration file (a handwritten .d.ts) has no runtime, so an import that resolves to one passes
 // only as a type import, `import type` or `export type`, which tsc erases: the last policy refuses
 // any other kind, and as the last whose selector matches it overrides the allow before it. The
 // dependency's kind is the declaration's, so `import { type X }` is a value import here, as it is

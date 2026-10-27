@@ -11,9 +11,6 @@
       "types": "./dist/css.d.ts"
     },
     "./css.js": null,
-    "./format.js": {
-      "types": "./dist/format.d.ts"
-    },
     "./*.js": {
       "types": "./dist/*.d.ts",
       "default": "./dist/*.js"

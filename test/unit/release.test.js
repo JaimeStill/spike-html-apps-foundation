@@ -72,8 +72,8 @@ describe("release pack", () => {
       "src/registry.ts has no built dist/registry.d.ts",
     ],
     "a .d.ts source with no copy": [
-      remove("dist/format.d.ts"),
-      "src/format.d.ts has no built dist/format.d.ts",
+      remove("dist/css.d.ts"),
+      "src/css.d.ts has no built dist/css.d.ts",
     ],
     "a stray built file": [
       (dir) => writeFileSync(join(dir, "dist/old.js"), ""),
