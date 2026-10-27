@@ -9,6 +9,7 @@ The architecture pages that apply, in the architecture repository:
 - `principles/minimal-footprint.md`
 - `principles/rolling-currency.md`
 - `principles/independent-releases.md`
+- `principles/downward-dependencies.md`
 - `principles/validation-first.md`
 
 ## Design
@@ -18,6 +19,8 @@ The architecture pages that apply, in the architecture repository:
 - A sheet is finished in every profile the baseline carries, light and dark.
 - Focus is always visible, motion is brief and honours reduced motion, and nothing shifts layout.
 - Density, alignment, and spacing in the tool sheets come from the tokens, never a literal.
+- A visual change's session brief carries its screenshots per profile; the architect's acceptance
+  is the design review, and a passing check alone doesn't ship one.
 
 ## Package
 
@@ -35,8 +38,8 @@ The architecture pages that apply, in the architecture repository:
 - Code meets the bar of spike-html-conventions' `layers/` code at a88828a: a 2–4 line header, a
   one-line doc comment per export, and comments only for a non-obvious why.
 - A copied file names its source repository and commit in a provenance line, which reads
-  `From|Adapted from <repo> (<commit>): <path>`; the immediate source comes first, and an earlier
-  source's line stays below it.
+  `From|Adapted from <repo> (<commit>): <path>`. It names the immediate source alone; that source
+  keeps the earlier lines.
 - Sources use `.ts` relative specifiers, which tsc rewrites; handwritten `.d.ts` keep `.js`.
 - A lazy load uses a literal `import()`.
 - The browser tier tests `dist/`, and no server transforms what it serves.
