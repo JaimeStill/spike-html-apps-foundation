@@ -84,6 +84,8 @@ run = "node scripts/demo.js"
 [tasks.screenshots]
 description = "Capture the tools page, keys help, and the theme menu in every profile and scheme, shown inline in kitty; --keep leaves the captures"
 depends = ["preflight browser", "build"]
+# raw: with dependencies, mise prefixes a task's output through a pipe; icat needs the terminal.
+raw = true
 run = "scripts/screenshots.sh"
 
 [tasks.currency]
