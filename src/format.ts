@@ -19,8 +19,8 @@ export function formatBytes(
   // steps as its positive does; anything under 1 kB, NaN included, stays in bytes.
   let step = 0;
   while (step < byteUnits.length - 1 && Math.abs(bytes) >= 1000 ** (step + 1)) step++;
-  // At most one fraction digit by default, the components' entry formatter's, unless the caller
-  // sets either bound: a minimum above a default maximum would throw.
+  // At most one fraction digit by default, unless the caller sets either bound: a minimum above a
+  // default maximum would throw.
   const fraction =
     options?.minimumFractionDigits === undefined && options?.maximumFractionDigits === undefined
       ? { maximumFractionDigits: 1 }

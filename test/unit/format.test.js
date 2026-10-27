@@ -33,8 +33,8 @@ describe("formatBytes", () => {
     assert.equal(formatBytes(-1500, LOCALE), "-1.5 kB");
   });
 
-  // The components' entry formatter, as src/entry-lit-shadow.ts in spike-html-apps-components
-  // writes it, for the byte counts it formats: none past a gigabyte's unit, none negative.
+  // An independent byte formatter, stepping by log10 to at most gigabytes at one fraction digit,
+  // for the counts it handles: none past a gigabyte's unit, none negative.
   const entryUnits = ["byte", "kilobyte", "megabyte", "gigabyte"].map(
     (unit) =>
       new Intl.NumberFormat(LOCALE, {
@@ -49,7 +49,7 @@ describe("formatBytes", () => {
     return entryUnits[step].format(bytes / 1000 ** step);
   };
 
-  test("its defaults print what the components' entry formatter prints", () => {
+  test("its defaults print what an independent one-fraction-digit formatter prints", () => {
     const counts = [0, 1, 999, 1000, 1049, 1050, 12_345, 999_949, 999_950, 1e6, 123_456_789, 4.2e9];
     for (const bytes of counts) assert.equal(formatBytes(bytes, LOCALE), entrySize(bytes), bytes);
   });
@@ -76,15 +76,6 @@ describe("formatDate and formatDateTime", () => {
 
   test("formatDateTime adds timeStyle short", () => {
     assert.equal(formatDateTime(moment, LOCALE, UTC), "Mar 4, 2026, 5:06 AM");
-  });
-
-  test("formatDateTime's defaults print what the components' entry formatter prints", () => {
-    const entry = new Intl.DateTimeFormat(LOCALE, {
-      dateStyle: "medium",
-      timeStyle: "short",
-      ...UTC,
-    });
-    assert.equal(formatDateTime(moment, LOCALE, UTC), entry.format(moment));
   });
 
   test("a caller's own field replaces the defaults instead of throwing", () => {
