@@ -1,6 +1,6 @@
 // The registry's store, shared by every copy of the module. A case's page is a fresh copy, imported
 // by a URL no other case uses, after the store is removed from the global object.
-// From spike-html-packages-foundation (5dd8a58): test/unit/registry.test.js.
+// Adapted from spike-html-packages-foundation (5dd8a58): test/unit/registry.test.js.
 
 import assert from "node:assert/strict";
 import { describe, test } from "node:test";

@@ -1,5 +1,6 @@
 /* A color profile that sets fifteen of the sixteen color tokens: no --magenta. It fails tokens
-   alone. Adapted from spike-html-design (fe75220): test/fixtures/conformance/missing.css. */
+   alone.
+   Adapted from spike-html-design (fe75220): test/fixtures/conformance/missing.css. */
 
 @layer foundation.tokens.color {
   :where([data-palette="missing"]) {

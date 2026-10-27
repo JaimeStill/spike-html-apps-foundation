@@ -1,6 +1,6 @@
 // The keys runtime and its help dialog from the package's dist/, pressed with real keys
 // through the DevTools Protocol on test/fixtures/keys*.html.
-// From spike-html-packages-foundation (5dd8a58): test/browser/keys.test.js.
+// Adapted from spike-html-packages-foundation (5dd8a58): test/browser/keys.test.js.
 
 import assert from "node:assert/strict";
 import { mkdtemp, rm, symlink, writeFile } from "node:fs/promises";

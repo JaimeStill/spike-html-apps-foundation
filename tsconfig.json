@@ -1,6 +1,6 @@
 // The build, src/ into dist/: tsc emits each module's .js and .d.ts. mise run types checks the same
 // sources with --noEmit. lib is es2025 for Intl.DurationFormat's types, which src/format.ts uses.
-// From spike-html-packages-foundation (5dd8a58): tsconfig.json.
+// Adapted from spike-html-packages-foundation (5dd8a58): tsconfig.json.
 {
   "compilerOptions": {
     "target": "es2024",

@@ -1,5 +1,5 @@
-/* A color profile that also sets a space token and a type token. It fails color-only alone. Adapted
-   from spike-html-design (fe75220): test/fixtures/conformance/spacing.css. */
+/* A color profile that also sets a space token and a type token. It fails color-only alone.
+   Adapted from spike-html-design (fe75220): test/fixtures/conformance/spacing.css. */
 
 @layer foundation.tokens.color {
   :where([data-palette="spacing"]) {

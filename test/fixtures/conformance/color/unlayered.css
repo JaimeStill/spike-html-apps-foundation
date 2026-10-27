@@ -1,5 +1,6 @@
 /* A color profile the fixture page links unlayered, outside foundation.tokens.color. It fails layer
-   alone. Adapted from spike-html-design (fe75220): test/fixtures/conformance/unlayered.css. */
+   alone.
+   Adapted from spike-html-design (fe75220): test/fixtures/conformance/unlayered.css. */
 
 :where([data-palette="unlayered"]) {
   --bg: light-dark(#fffcf0, #100f0f);

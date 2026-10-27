@@ -1,6 +1,6 @@
 /*
  * The foundation's page entry: the one stylesheet a page links.
- * From spike-html-packages-foundation (5dd8a58): src/page.css.
+ * Adapted from spike-html-packages-foundation (5dd8a58): src/page.css.
  */
 
 /* Comes first to fix the order. meta precedes structure and utilities so a .button that is also

@@ -1,12 +1,11 @@
 /* Adapted from spike-html-design (fe75220): layers/tokens/color/catppuccin.css */
 
 /*
- * The content is upstream's but for the block that wraps it in the foundation.tokens.color layer
- * and the layer names its comments give, spike-html-design.* upstream and foundation.* here.
- * Upstream's remarks on its entries describe upstream: here the file layers itself, imports
- * nothing, and the foundation's full page entry, page-full.css, imports it. The port is this
- * repository's own code: Prettier formats it, and the browser tier holds what it computes, not its
- * text, to upstream's.
+ * The content is upstream's but for the block that wraps it in the foundation.tokens.color layer,
+ * the layer names its comments give, spike-html-design.* upstream and foundation.* here, and the
+ * paragraph on how a page takes the unit, written for this package. The port is this repository's
+ * own code: Prettier formats it, and the browser tier holds what it computes, not its text, to
+ * upstream's.
  */
 
 /*

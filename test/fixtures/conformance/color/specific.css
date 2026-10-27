@@ -1,5 +1,6 @@
 /* A color profile whose selector has specificity (0,1,0), with no :where(). It fails specificity
-   alone. Adapted from spike-html-design (fe75220): test/fixtures/conformance/specific.css. */
+   alone.
+   Adapted from spike-html-design (fe75220): test/fixtures/conformance/specific.css. */
 
 @layer foundation.tokens.color {
   [data-palette="specific"] {

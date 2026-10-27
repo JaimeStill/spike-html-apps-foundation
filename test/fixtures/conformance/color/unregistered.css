@@ -1,5 +1,5 @@
-/* A conforming color profile the fixture page never registers. It fails registered alone. Adapted
-   from spike-html-design (fe75220): test/fixtures/conformance/unregistered.css. */
+/* A conforming color profile the fixture page never registers. It fails registered alone.
+   Adapted from spike-html-design (fe75220): test/fixtures/conformance/unregistered.css. */
 
 @layer foundation.tokens.color {
   :where([data-palette="unregistered"]) {

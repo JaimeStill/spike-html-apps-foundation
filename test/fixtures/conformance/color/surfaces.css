@@ -1,6 +1,6 @@
 /* A color profile with --bg-1 and --bg-2 swapped, so the surfaces step away from the text after
-   --bg-1. It fails surfaces alone. Adapted from spike-html-design (fe75220):
-   test/fixtures/conformance/surfaces.css. */
+   --bg-1. It fails surfaces alone.
+   Adapted from spike-html-design (fe75220): test/fixtures/conformance/surfaces.css. */
 
 @layer foundation.tokens.color {
   :where([data-palette="surfaces"]) {
