@@ -17,9 +17,12 @@
  * only the two it changes, so the nearest scope wins for every type token. The tokens' roles and
  * how a profile is selected are the facet's, in layers/tokens/type.css.
  *
- * A page that links the lean entry imports it into the type sub-layer, after the entry, and names
- * it with data-type; the full entry, full.css, imports it already, after mono. Linked on its own,
- * its rules would be unlayered.
+ * The package exports this file as ./profiles/type/sans.css, and its registration module as
+ * ./profiles/type/sans.js: together, the sans unit. A page that links the lean entry, page.css,
+ * links this sheet after it, which layers itself into foundation.tokens.type after mono, and
+ * imports the module, which registers sans and loads no CSS; data-type then names it, and the theme
+ * menu lists it. The full entry, page-full.css, imports this sheet already, after mono, and
+ * register-full.js imports the module.
  */
 
 @layer foundation.tokens.type {

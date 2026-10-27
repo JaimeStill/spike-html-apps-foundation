@@ -5,7 +5,7 @@
 import { serve } from "../test/browser/support/server.js";
 
 const server = await serve();
-for (const page of ["tools", "profiles", "theme", "keys", "format"]) {
+for (const page of ["tools", "profiles", "theme", "unit", "keys", "format"]) {
   console.log(`${server.origin}/demo/${page}.html`);
 }
 process.once("SIGINT", async () => {

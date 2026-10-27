@@ -2,7 +2,8 @@
 // computes the same, at rest and hovered, and dropping any one declaration shows. The page entry's
 // layer order and default profiles are read from the same page. The full page entry's profiles
 // compute as v0.7.0's full entry's, in light and in dark, and dropping any one declaration of a
-// profile it adds shows; each entry's registration module lists exactly the profiles it defines.
+// profile it adds shows; each entry's registration module lists exactly the profiles it defines,
+// and each built-in unit's module registers its one profile and loads no CSS.
 // demo/profiles.html switches the tools page through every profile.
 // Adapted from spike-html-packages-foundation (5dd8a58): test/browser/tools.test.js.
 
@@ -208,6 +209,30 @@ describe("foundation tools", () => {
     });
   }
 
+  // Each built-in unit's module, imported alone on a page whose registry is otherwise empty,
+  // registers its own name under its facet, nothing else, and fetches no stylesheet.
+  for (const { facet, name } of FULL_PROFILES) {
+    const module = `/dist/profiles/${facet}/${name}.js`;
+    test(`${module} registers ${name} under ${facet} alone and loads no CSS`, async () => {
+      const page = await toolsPage(entry);
+      const sheets = `performance.getEntriesByType("resource")
+        .filter(({ name }) => name.endsWith(".css")).length`;
+      const { registered, before, after } = await page.evaluate(`(async () => {
+        const before = ${sheets};
+        await import("${module}");
+        const { FACETS, profiles } = await import("/dist/registry.js");
+        return {
+          registered: Object.fromEntries(FACETS.map((facet) => [facet, profiles(facet)])),
+          before,
+          after: ${sheets},
+        };
+      })()`);
+      await page.close();
+      assert.deepEqual(registered, { color: [], space: [], type: [], [facet]: [name] });
+      assert.equal(after, before, "the module fetched a stylesheet");
+    });
+  }
+
   test("with no profile attribute, the page entry applies DEFAULTS' profiles", async () => {
     const page = await toolsPage(entry);
     // A custom property keeps its source's line breaks.
@@ -280,7 +305,7 @@ describe("foundation tools", () => {
   // Each added profile's declarations, dropped one at a time on its scope under sentinels: every
   // one must show, as the scope inherits no token its profile fails to declare.
   for (const profile of ADDED) {
-    const file = `/baseline/tokens/${profile.facet}/${profile.name}.css`;
+    const file = `/profiles/${profile.facet}/${profile.name}.css`;
     test(`dropping any one declaration of ${profile.name}.css fails the comparison`, async () => {
       const options = setup(profile, "light", true);
       const theirs = await scoped(fullReference, options);

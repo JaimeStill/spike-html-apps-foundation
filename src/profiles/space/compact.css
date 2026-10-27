@@ -16,9 +16,12 @@
  * the same line widths. The tokens' roles, what derives from these values, and how a profile is
  * selected are the facet's, in layers/tokens/space.css.
  *
- * A page that links the lean entry imports it into the space sub-layer, after the entry, and
- * names it with data-space; the full entry, full.css, imports it already, after regular. Linked
- * on its own, its rules would be unlayered.
+ * The package exports this file as ./profiles/space/compact.css, and its registration module as
+ * ./profiles/space/compact.js: together, the compact unit. A page that links the lean entry,
+ * page.css, links this sheet after it, which layers itself into foundation.tokens.space after
+ * regular, and imports the module, which registers compact and loads no CSS; data-space then names
+ * it, and the theme menu lists it. The full entry, page-full.css, imports this sheet already, after
+ * regular, and register-full.js imports the module.
  */
 
 @layer foundation.tokens.space {

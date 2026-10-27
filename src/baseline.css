@@ -1,10 +1,11 @@
-/* From spike-html-packages-foundation (5dd8a58): src/baseline.css */
+/* Adapted from spike-html-packages-foundation (5dd8a58): src/baseline.css */
 
 /*
  * The foundation's page entry: the baseline, the port of spike-html-design v0.7.0 (commit fe75220)
- * in baseline/, its tokens (color with the Flexoki profile, space with regular, type with mono),
- * reset, and elements. Every page links this file, a shadow-root page too: a shadow root reads the
- * tokens by inheritance, though the reset and elements layers' selectors stop at its boundary.
+ * in baseline/ and profiles/, its tokens (color with the Flexoki profile, space with regular, type
+ * with mono), reset, and elements. Every page links this file, a shadow-root page too: a shadow
+ * root reads the tokens by inheritance, though the reset and elements layers' selectors stop at its
+ * boundary.
  *
  * The layer statements come first and fix the order of the foundation's layers, as upstream's
  * baseline.css fixes its own, in two statements rather than upstream's one so that no formatter
@@ -13,17 +14,18 @@
  * their specificity. Each ported file wraps its rules in its own layer block, so the imports below
  * take no layer(): a constructed sheet or a CSS module script loads no @import, so the ported files
  * hold none, and this entry, which only a page links, is the one place an @import is written. A
- * facet's profile follows the facet's own file in the same layer, as upstream imports them.
+ * facet's profile follows the facet's own file in the same layer, as upstream imports them; each
+ * default's sheet is its unit's, in profiles/.
  */
 
 @layer foundation.tokens.color, foundation.tokens.space, foundation.tokens.type;
 @layer foundation.reset, foundation.elements;
 
 @import url(./baseline/tokens/color.css);
-@import url(./baseline/tokens/color/flexoki.css);
+@import url(./profiles/color/flexoki.css);
 @import url(./baseline/tokens/space.css);
-@import url(./baseline/tokens/space/regular.css);
+@import url(./profiles/space/regular.css);
 @import url(./baseline/tokens/type.css);
-@import url(./baseline/tokens/type/mono.css);
+@import url(./profiles/type/mono.css);
 @import url(./baseline/reset.css);
 @import url(./baseline/elements.css);

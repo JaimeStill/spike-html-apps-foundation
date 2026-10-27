@@ -1,4 +1,4 @@
-/* From spike-html-packages-foundation (5dd8a58): src/baseline/tokens/type/mono.css */
+/* Adapted from spike-html-packages-foundation (5dd8a58): src/baseline/tokens/type/mono.css */
 
 /*
  * Ported from spike-html-design v0.7.0, commit fe75220: layers/tokens/type/mono.css.
@@ -17,9 +17,11 @@
  * leadings. The fonts are system stacks: sans for the body, mono for the rest. The tokens' roles
  * and how a profile is selected are the facet's, in layers/tokens/type.css.
  *
- * Both entries, baseline.css and full.css, import it into foundation.tokens.type after the
- * facet's own file. Pages link an entry, never this file: linked on its own, its rules would be
- * unlayered.
+ * The package exports this file as ./profiles/type/mono.css, and its registration module as
+ * ./profiles/type/mono.js: together, the mono unit. Both entries, page.css through baseline.css and
+ * page-full.css, import this sheet into foundation.tokens.type after the facet's own file, and both
+ * registration modules, register.js and register-full.js, import the module, which registers mono
+ * and loads no CSS.
  */
 
 @layer foundation.tokens.type {

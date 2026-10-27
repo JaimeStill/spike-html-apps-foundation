@@ -1,4 +1,4 @@
-/* From spike-html-packages-foundation (5dd8a58): src/baseline/tokens/color/flexoki.css */
+/* Adapted from spike-html-packages-foundation (5dd8a58): src/baseline/tokens/color/flexoki.css */
 
 /*
  * Ported from spike-html-design v0.7.0, commit fe75220: layers/tokens/color/flexoki.css.
@@ -22,9 +22,11 @@
  * in layers/tokens/color.css. Each value's comment names its upstream swatch, light / dark, or the
  * one name both share.
  *
- * Exported as ./profiles/flexoki. Both entries, baseline.css and full.css, import it into
- * foundation.tokens.color after the facet's own file. Pages link an entry, never this file:
- * linked on its own, its rules would be unlayered.
+ * The package exports this file as ./profiles/color/flexoki.css, and its registration module as
+ * ./profiles/color/flexoki.js: together, the Flexoki unit. Both entries, page.css through
+ * baseline.css and page-full.css, import this sheet into foundation.tokens.color after the facet's
+ * own file, and both registration modules, register.js and register-full.js, import the module,
+ * which registers flexoki and loads no CSS.
  */
 
 @layer foundation.tokens.color {

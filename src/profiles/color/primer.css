@@ -22,19 +22,21 @@
  * comment names its upstream swatch, light / dark, or the one name both share. Light Default's
  * canvas.subtle is its canvas.inset, so its element surface takes the next gray, scale.gray[1].
  *
- * The package exports this file as ./profiles/primer. A page that links the lean entry imports it
- * into the color sub-layer, after the entry, and names it with data-palette; <base> is where the
- * entry is served from, as a jsDelivr tag's root:
+ * The package exports this file as ./profiles/color/primer.css, and its registration module as
+ * ./profiles/color/primer.js: together, the Primer unit. A page that links the lean entry,
+ * page.css, links this sheet after it, which layers itself into foundation.tokens.color after
+ * Flexoki, and imports the module, which registers primer and loads no CSS; data-palette then names
+ * it, and the theme menu lists it. <base> is where the package is served from, as a jsDelivr tag's
+ * dist/:
  *
- *   <link rel="stylesheet" href="<base>/baseline.css" />
- *   <style>
- *     @import url(<base>/layers/tokens/color/primer.css)
- *       layer(foundation.tokens.color);
- *   </style>
+ *   <link rel="stylesheet" href="<base>/page.css" />
+ *   <link rel="stylesheet" href="<base>/profiles/color/primer.css" />
+ *   <script type="module" blocking="render" src="<base>/register.js"></script>
+ *   <script type="module" blocking="render" src="<base>/profiles/color/primer.js"></script>
  *   <html data-palette="primer">
  *
- * The full entry, full.css, imports it already, after Flexoki. Linked on its own, its rules would
- * be unlayered.
+ * The full entry, page-full.css, imports this sheet already, after Flexoki, and register-full.js
+ * imports the module.
  */
 
 @layer foundation.tokens.color {

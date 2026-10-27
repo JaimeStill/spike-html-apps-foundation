@@ -1,7 +1,8 @@
 // The preferences module and the theme menu from the package's dist/, as a consumer loads them:
 // the stored choice applied before first paint, kept in storage, and followed across tabs, and
 // <sl-theme-menu>, pressed with real keys through the DevTools Protocol, on
-// test/fixtures/preferences*.html and test/fixtures/flash-*.html, and demo/theme.html.
+// test/fixtures/preferences*.html and test/fixtures/flash-*.html, and demo/theme.html and
+// demo/unit.html; and a unit, built-in or from outside the package, joining a lean page.
 // Adapted from spike-html-design (fe75220): test/preferences.test.js.
 
 import assert from "node:assert/strict";
@@ -776,6 +777,58 @@ describe("preferences: the menu", () => {
   });
 });
 
+// A unit joins a lean page by its sheet linked after the entry and its module imported, a built-in
+// unit from dist/profiles/ or a profile from outside the package, test/fixtures/extension/, alike:
+// the menu lists it, and the attribute and a stored choice apply it.
+describe("preferences: units and extensions", () => {
+  /** The menu's names per section, on a page whose menu is open. */
+  const listed = (page) =>
+    page.evaluate(`Object.fromEntries([...document.querySelectorAll(
+      "sl-theme-menu fieldset")].map((row) => [row.dataset.section,
+      [...row.querySelectorAll("input")].map((radio) => radio.value)]))`);
+
+  /** The root's --bg, its whitespace collapsed. */
+  const background = (page) =>
+    page.evaluate(`getComputedStyle(document.documentElement).getPropertyValue("--bg")
+      .trim().replace(/\\s+/g, " ")`);
+
+  const units = [
+    ["preferences-extension.html", "extension", "light-dark(#fdf6fd, #120a12)"],
+    ["preferences-unit.html", "primer", "light-dark(#ffffff, #1c2128)"],
+  ];
+  for (const [name, color, bg] of units) {
+    test(`on ${name}, the menu lists flexoki and ${color} alone, beside the lean defaults`, async () => {
+      const page = await openMenu(null, name);
+      assert.deepEqual(await listed(page), {
+        color: ["flexoki", color],
+        scheme: ["system", "light", "dark"],
+        space: ["regular"],
+        type: ["mono"],
+      });
+    });
+
+    test(`on ${name}, data-palette="${color}" applies its tokens`, async () => {
+      await seed(null);
+      const page = await open(fixture(name));
+      const flexoki = await background(page);
+      await page.evaluate(`document.documentElement.setAttribute("data-palette", "${color}")`);
+      assert.equal(await background(page), bg);
+      assert.notEqual(flexoki, bg);
+    });
+
+    test(`on ${name}, a stored choice of ${color} applies on load`, async () => {
+      await seed({ ...CHOICE, color });
+      const page = await open(fixture(name));
+      assert.deepEqual(await rooted(page), {
+        ...NONE,
+        "data-palette": color,
+        "data-scheme": "dark",
+      });
+      assert.equal(await background(page), bg);
+    });
+  }
+});
+
 describe("preferences: demo/theme.html", () => {
   const demo = () => `${server.origin}/demo/theme.html`;
 
@@ -795,5 +848,21 @@ describe("preferences: demo/theme.html", () => {
     await waitFor(other, `document.documentElement.getAttribute("data-palette") === "primer"`);
     await page.goto(demo());
     assert.equal((await rooted(page))["data-palette"], "primer");
+  });
+});
+
+describe("preferences: demo/unit.html", () => {
+  test("its menu lists the lean defaults and the Primer unit, and applies primer", async () => {
+    await seed(null);
+    const page = await open(`${server.origin}/demo/unit.html`);
+    await clickTheme(page);
+    const colors = await page.evaluate(`[...document.querySelectorAll(
+      'sl-theme-menu [data-section="color"] input')].map((radio) => radio.value)`);
+    assert.deepEqual(colors, ["flexoki", "primer"]);
+    await press(page, "l");
+    await press(page, "t");
+    await closed(page);
+    assert.equal((await rooted(page))["data-palette"], "primer");
+    assert.equal(await style(page, "body", "background-color"), "rgb(255, 255, 255)");
   });
 });
