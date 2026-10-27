@@ -17,8 +17,10 @@ follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), and the packag
 - Each built-in profile as a self-contained unit, its sheet at `./profiles/<facet>/<name>.css` and
   its registration module at `./profiles/<facet>/<name>.js`. A lean page links a unit's sheet after
   `page.css` and imports its module to add that one profile.
-- The full page entry, `page-full.css`, and its registration module, `register-full.js`: each
-  aggregates every unit's sheet or module, under the same layer order as `page.css`.
+- The registration modules: `register.js`, for `page.css`, registers the defaults, and
+  `register-full.js` is the full page entry's.
+- The full page entry, `page-full.css`, and `register-full.js`: each aggregates every unit's sheet
+  or module, the entry under the same layer order as `page.css`.
 - The preferences module, `./preferences.js`: the reader's theme choice applied to the root before
   first paint, kept under the localStorage key `spike-html-apps-foundation.preferences`, and
   followed across tabs. Its `<sl-theme-menu>` opens on the invoker command `--open` and loads the

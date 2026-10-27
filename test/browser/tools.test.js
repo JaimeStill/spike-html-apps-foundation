@@ -145,12 +145,16 @@ describe("foundation tools", () => {
     return rest;
   }
 
-  // v0.7.0's reading, which every comparison is against.
+  // v0.7.0's reading, which every comparison is against, and its lean reading in each scheme
+  // forced on the root, which an added profile's must differ from, so a profile that applied
+  // nothing can't pass.
   let upstream;
+  const defaults = {};
   before(async () => {
     server = await serve();
     browser = await launch();
     upstream = await snapshot(reference);
+    for (const scheme of SCHEMES) defaults[scheme] = await scoped(reference, { scheme });
   });
   after(async () => {
     await browser?.close();
@@ -263,14 +267,9 @@ describe("foundation tools", () => {
     assert.deepEqual(lines, [], head(lines));
   });
 
-  // v0.7.0's lean reading in each scheme forced on the root, which an added profile's must differ
-  // from, so a profile that applied nothing can't pass.
-  const defaults = {};
-
   // The lean entry's defaults with no profile attribute, in each scheme forced on the root.
   for (const scheme of SCHEMES) {
     test(`the page entry computes as v0.7.0's lean entry, ${scheme}`, async () => {
-      defaults[scheme] = await scoped(reference, { scheme });
       const lines = differences(defaults[scheme], await scoped(entry, { scheme }));
       assert.deepEqual(lines, [], head(lines));
     });

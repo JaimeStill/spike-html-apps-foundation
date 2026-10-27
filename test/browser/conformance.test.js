@@ -13,13 +13,6 @@ import { serve } from "./support/server.js";
 
 const CONFORMANCE = "/dist/conformance.js";
 
-/** Each facet's rule names, in the order check() reports them. */
-const RULES = {
-  color: ["tokens", "color-only", "layer", "specificity", "paints", "surfaces", "registered"],
-  space: ["tokens", "space-only", "layer", "specificity", "scale", "registered"],
-  type: ["tokens", "type-only", "layer", "specificity", "scale", "registered"],
-};
-
 /** The full entry's profiles, per facet. */
 const BUILT_IN = {
   color: ["flexoki", "primer", "catppuccin", "everforest"],
@@ -163,7 +156,12 @@ describe("conformance", () => {
     }
   });
 
-  test("every rule of every facet has a fixture that breaks it", () => {
+  test("every rule the module exports has a fixture that breaks it", async () => {
+    const page = await open(fixture("conformance.html"));
+    const RULES = await page.evaluate(
+      `import(${JSON.stringify(CONFORMANCE)}).then(({ RULES }) => RULES)`,
+    );
+    assert.deepEqual(Object.keys(RULES), Object.keys(BROKEN));
     for (const [facet, byName] of Object.entries(BROKEN)) {
       assert.deepEqual([...new Set(Object.values(byName))].sort(), [...RULES[facet]].sort(), facet);
     }
@@ -212,13 +210,12 @@ describe("conformance", () => {
     assert.deepEqual(rules(results), { color: { flexoki: ["paints"], primer: [] } });
   });
 
-  test("exports the rules, and rejects an unknown facet or an empty name", async () => {
+  test("freezes the rules, and rejects an unknown facet or an empty name", async () => {
     const page = await open(fixture("conformance.html"));
     assert.deepEqual(
       await page.evaluate(`import(${JSON.stringify(CONFORMANCE)}).then(async ({ check, RULES }) => {
         const rejected = (call) => call.then(() => null, (error) => [error.name, error.message]);
         return [
-          RULES,
           Object.isFrozen(RULES) && Object.values(RULES).every(Object.isFrozen),
           await rejected(check("scheme", "dark")),
           await rejected(check("space", "")),
@@ -226,7 +223,6 @@ describe("conformance", () => {
         ];
       })`),
       [
-        RULES,
         true,
         ["TypeError", "conformance: unknown facet scheme; expected one of color, space, type"],
         ["TypeError", "conformance: a space profile's name must be a non-empty string"],
