@@ -21,6 +21,15 @@ The architecture pages that apply, in the architecture repository:
 - Density, alignment, and spacing in the tool sheets come from the tokens, never a literal.
 - A visual change's session brief carries its screenshots per profile; the architect's acceptance
   is the design review, and a passing check alone doesn't ship one.
+- The baseline is open for extension, closed for modification: a consumer extends it in its own
+  layers, and a new profile joins as a unit beside the built-in ones.
+- Page layout is the consumer's: the foundation's sheets set no page column, gutters, or section
+  spacing, and the demo pages take theirs from their own layer, `demo/demo.css`.
+
+## Conformance
+
+- A profile an extension package ships, in any facet, must pass `check(facet, name)` from
+  `./conformance.js`. The contract is that facet's rules in `RULES`, and nothing more.
 
 ## Package
 

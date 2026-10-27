@@ -17,20 +17,21 @@ follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), and the packag
 - Each built-in profile as a self-contained unit, its sheet at `./profiles/<facet>/<name>.css` and
   its registration module at `./profiles/<facet>/<name>.js`. A lean page links a unit's sheet after
   `page.css` and imports its module to add that one profile.
-- The registration modules: `register.js`, for `page.css`, registers the defaults, and
-  `register-full.js` is the full page entry's.
-- The full page entry, `page-full.css`, and `register-full.js`: each aggregates every unit's sheet
-  or module, the entry under the same layer order as `page.css`.
+- The registration modules: `register.js`, beside `page.css`, registers the three defaults, and
+  `register-full.js`, beside `page-full.css`, registers every built-in profile.
+- The full page entry, `page-full.css`: every unit's sheet, under `page.css`'s layer order. It and
+  `register-full.js` only aggregate the units and define nothing of their own.
 - The preferences module, `./preferences.js`: the reader's theme choice applied to the root before
   first paint, kept under the localStorage key `spike-html-apps-foundation.preferences`, and
   followed across tabs. Its `<sl-theme-menu>` opens on the invoker command `--open` and loads the
   menu, `./theme-menu.js`, on first open; the menu's sheet, `./theme-menu.css`, sits in the
   `foundation.theme-menu` layer.
-- The conformance module, `./conformance.js`: `check(facet, name)` reports how a color, space, or
-  type profile breaks the facet's contract.
-- `mise run screenshots`: the tools page, keys help, and the theme menu, wide and narrow, in every
-  profile and scheme, in the pinned chrome-headless-shell, shown inline in kitty. The check never
-  runs it.
+- The conformance module, `./conformance.js`: `check(facet, name)` reports each rule of the
+  facet's `RULES` that a color, space, or type profile breaks.
+- `mise run screenshots [--keep]`: the tools page, keys help, and the theme menu, wide and narrow,
+  in each of the four colors and in compact and sans, light and dark, in the pinned
+  chrome-headless-shell, shown inline in kitty and removed on exit unless `--keep` is given. The
+  check never runs it.
 
 ### Changed
 
@@ -40,7 +41,7 @@ follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), and the packag
   under the old key are no longer read.
 - **Breaking:** the default profiles' sheets move from `./baseline/tokens/<facet>/<name>.css` to
   `./profiles/<facet>/<name>.css`; the old paths are gone.
-- `page.css` and `page-full.css` order `foundation.theme-menu` last among the foundation's layers.
+- `page.css`'s layer order ends with `foundation.theme-menu`.
 - The type-check's lib moves to es2025, for `Intl.DurationFormat`'s types.
 
 ### Removed
