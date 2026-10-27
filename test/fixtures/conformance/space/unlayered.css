@@ -1,0 +1,9 @@
+/* A space profile the fixture page links unlayered, outside foundation.tokens.space. It fails layer
+   alone. */
+
+:where([data-space="unlayered"]) {
+  --space-base: 1rem;
+  --line-s: 1px;
+  --line-m: 2px;
+  --radius-base: 0.375rem;
+}

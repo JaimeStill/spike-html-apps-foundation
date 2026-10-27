@@ -1,0 +1,9 @@
+/* A space profile that sets three of the four values: no --radius-base. It fails tokens alone. */
+
+@layer foundation.tokens.space {
+  :where([data-space="missing"]) {
+    --space-base: 1rem;
+    --line-s: 1px;
+    --line-m: 2px;
+  }
+}
