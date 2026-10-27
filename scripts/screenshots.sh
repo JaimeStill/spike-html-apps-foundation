@@ -1,10 +1,7 @@
 #!/usr/bin/env bash
-# Captures the demo pages, on dist/, in the pinned chrome-headless-shell: the tools page, keys help
-# open, and the theme menu open, wide and narrow, each in every profile and scheme. Builds dist/
-# first when it is missing or older than src/. Prints each capture's caption and path, and shows it
-# inline with kitty's icat when stdout is a terminal that displays images, through tmux's
-# passthrough too. The captures go into a mktemp -d directory, removed on exit; with --keep, the
-# directory stays and its path is printed last. The check never runs it.
+# mise run screenshots: captures the demo pages on dist/ in every profile and scheme, through
+# screenshots.js, into a mktemp -d directory removed on exit unless --keep. Prints each capture's
+# caption and path, and shows it inline with kitty's icat when the terminal displays images.
 set -euo pipefail
 cd "$(dirname "$0")/.."
 
@@ -18,10 +15,6 @@ for arg in "$@"; do
       ;;
   esac
 done
-
-if [[ ! -f dist/page-full.css || -n $(find src -newer dist/page-full.css -print -quit) ]]; then
-  scripts/build.sh
-fi
 
 dir=$(mktemp -d "${TMPDIR:-/tmp}/screenshots.XXXXXX")
 if $keep; then

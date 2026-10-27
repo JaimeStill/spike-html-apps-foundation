@@ -83,7 +83,7 @@ run = "node scripts/demo.js"
 # Never a dependency of check: a reviewer's look at the pages, not a test.
 [tasks.screenshots]
 description = "Capture the tools page, keys help, and the theme menu in every profile and scheme, shown inline in kitty; --keep leaves the captures"
-depends = ["preflight browser"]
+depends = ["preflight browser", "build"]
 run = "scripts/screenshots.sh"
 
 [tasks.currency]

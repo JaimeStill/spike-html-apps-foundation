@@ -1,12 +1,7 @@
-// mise run screenshots' capture half: renders each state of the demo pages, on dist/, in every
-// profile and scheme, through the browser tier's driver, and writes one PNG per capture into the
-// directory its one argument names, printing `<path>\t<caption>` as each is written.
-// screenshots.sh runs it and shows the captures.
-//
-// Each capture opens a fresh page, points its stylesheet link at the full entry, page-full.css,
-// and names the profile and the scheme on the root by data-palette, data-space, data-type, and
-// data-scheme, as demo/profiles.html does in its frame, so no demo page changes: tools.html stays
-// as the browser tier compares it.
+// screenshots.sh's capture half: each demo page state in every profile and scheme, through the
+// browser tier's driver, one PNG per capture into the directory its argument names, printing
+// `<path>\t<caption>` for each. A capture points the page at page-full.css and sets the profile's
+// attributes on its root, as demo/profiles.html does, so no demo page changes.
 
 import { writeFileSync } from "node:fs";
 import { join } from "node:path";
