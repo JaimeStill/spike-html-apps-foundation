@@ -80,6 +80,12 @@ description = "Serve the tools, profiles, theme, unit, keys, and format demo pag
 depends = ["build"]
 run = "node scripts/demo.js"
 
+# Never a dependency of check: a reviewer's look at the pages, not a test.
+[tasks.screenshots]
+description = "Capture the tools page, keys help, and the theme menu in every profile and scheme, shown inline in kitty; --keep leaves the captures"
+depends = ["preflight browser"]
+run = "scripts/screenshots.sh"
+
 [tasks.currency]
 description = "Report every mise tool, package.json pin, and action pin behind its latest, exiting nonzero if any"
 run = "scripts/currency.sh"
