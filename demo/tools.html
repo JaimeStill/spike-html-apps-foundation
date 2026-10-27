@@ -7,8 +7,10 @@
     <!-- Every tool class of the foundation's three lateral-concern sheets, from dist/. The browser
          tier (test/browser/tools.test.js) compares each element's computed style here against
          spike-html-design v0.7.0's sheets, so every tool class sits on at least one element.
+         demo.css lays out the column and the sections alike under either set of sheets.
          From spike-html-packages-foundation (5dd8a58): demo/tools.html. -->
     <link rel="stylesheet" href="../dist/page.css" />
+    <link rel="stylesheet" href="demo.css" />
   </head>
   <body>
     <main>
@@ -65,12 +67,23 @@
 
       <section id="utilities">
         <h2>Utilities: scroll and tables</h2>
-        <div class="scroll-y" style="block-size: 6rem">
-          <p>A vertical scroller, with a stable gutter.</p>
-          <p>Its content overflows its block size.</p>
-          <p>So it scrolls on the block axis.</p>
-          <p>And keeps its width whether or not it does.</p>
-          <p>The last line.</p>
+        <!-- One paragraph of whole lines, in a frame four lines high inside its border, so it
+             clips between lines and reads as a scroller where the scrollbar is hidden. -->
+        <div
+          class="scroll-y"
+          style="
+            block-size: calc(4lh + 2 * var(--line-s));
+            border: var(--line-s) solid var(--border);
+            padding-inline-start: var(--space-2xs);
+          "
+        >
+          <p>
+            A vertical scroller, with a stable gutter.<br />
+            Its content overflows its block size.<br />
+            So it scrolls on the block axis.<br />
+            And keeps its width whether or not it does.<br />
+            The last line.
+          </p>
         </div>
         <div class="scroll-x">
           <table class="table-striped">
