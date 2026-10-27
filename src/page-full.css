@@ -10,7 +10,7 @@
 
 /* Comes first to fix the order, and names the same layers as page.css's, in the same order. */
 
-@layer foundation.tokens.color, foundation.tokens.space, foundation.tokens.type, foundation.reset, foundation.elements, foundation.meta, foundation.structure, foundation.utilities;
+@layer foundation.tokens.color, foundation.tokens.space, foundation.tokens.type, foundation.reset, foundation.elements, foundation.meta, foundation.structure, foundation.utilities, foundation.theme-menu;
 
 @import url(./baseline/tokens/color.css);
 @import url(./baseline/tokens/color/flexoki.css);

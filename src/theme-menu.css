@@ -1,0 +1,99 @@
+/*
+ * The theme menu's arrangement, never the baseline's layers: theme-menu.ts imports it as a CSS
+ * module script and adopts it onto the document once, in foundation.theme-menu, which both page
+ * entries order after foundation.utilities, so it falls under every consumer layer and unlayered
+ * CSS. It reads the baseline's tokens for every space, line, radius, color, and font, and
+ * hard-codes none; its fixed lengths are layout: the dialog's widest size, the breakpoint, a
+ * value's width, and the 1px box that hides a radio visually.
+ * Adapted from spike-html-design (fe75220): modules/theme-menu.js.
+ */
+
+@layer foundation.theme-menu {
+  .theme-menu {
+    inline-size: min(100% - 2 * var(--space-s), 56rem);
+    max-block-size: calc(100% - 2 * var(--space-s));
+  }
+  .theme-menu > h2 {
+    margin-block: 0 var(--space-s);
+  }
+  .theme-menu-body {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr);
+    gap: var(--space-s);
+    align-items: start;
+  }
+  @media (width >= 48rem) {
+    .theme-menu-body {
+      grid-template-columns: minmax(0, 2fr) minmax(0, 3fr);
+    }
+  }
+  .theme-menu-rows {
+    display: grid;
+    gap: var(--space-3xs);
+  }
+  .theme-menu-row {
+    position: relative;
+    display: flex;
+    align-items: center;
+    gap: var(--space-2xs);
+    margin: 0;
+    padding: var(--space-3xs) var(--space-2xs);
+    border: var(--line-s) solid transparent;
+    border-radius: var(--radius-sm);
+  }
+  .theme-menu-row:has(:focus-visible) {
+    border-color: var(--border-2);
+    background-color: var(--bg-2);
+  }
+  .theme-menu-row > legend {
+    float: inline-start;
+    flex: 1;
+    padding: 0;
+  }
+  .theme-menu-row > [data-step] {
+    padding-inline: var(--space-3xs);
+    color: var(--fg-3);
+    cursor: pointer;
+    user-select: none;
+  }
+  .theme-menu-row > [data-step]:hover {
+    color: var(--fg);
+  }
+  .theme-menu-row > label {
+    min-inline-size: 11ch;
+    font-family: var(--font-code);
+    text-align: center;
+  }
+  .theme-menu-row input,
+  .theme-menu-row > label:not(:has(:checked)) {
+    position: absolute;
+    inline-size: 1px;
+    block-size: 1px;
+    margin: 0;
+    overflow: hidden;
+    clip-path: inset(50%);
+    white-space: nowrap;
+  }
+  .theme-menu-preview {
+    display: grid;
+    gap: var(--space-xs);
+    min-inline-size: 0;
+    padding: var(--space-s);
+    border: var(--line-s) solid var(--border);
+    border-radius: var(--radius-md);
+    background-color: var(--bg);
+    color: var(--fg);
+  }
+  .theme-menu-preview > * {
+    margin-block: 0;
+  }
+  .theme-menu-buttons,
+  .theme-menu > footer {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-2xs);
+  }
+  .theme-menu > footer {
+    justify-content: end;
+  }
+}
