@@ -1,7 +1,7 @@
 // The page's keyboard shortcuts: an element with data-keys is clicked or focused by its keys, and
 // register() binds a handler. One store at a well-known global key is shared by every copy, and
 // the first copy to load installs the one listener, so a key never fires twice.
-// From spike-html-packages-foundation (5dd8a58): src/keys.ts.
+// Adapted from spike-html-packages-foundation (5dd8a58): src/keys.ts.
 
 import type * as Help from "./keys-help.ts";
 import { keyshortcuts, matches, normalize, parse, problem, stringify } from "./keys-grammar.ts";
@@ -67,7 +67,7 @@ interface Match {
 }
 
 /** The store's well-known global key, shared by every copy of the module. */
-const KEY = Symbol.for("spike-html-design.keys");
+const KEY = Symbol.for("spike-html-apps-foundation.keys");
 const scope = globalThis as typeof globalThis & Record<symbol, Store | undefined>;
 scope[KEY] ??= { registered: [], wait: 1500, listening: false };
 const store: Store = scope[KEY];
@@ -99,7 +99,7 @@ export function register(keys: string, label: string, handler: Handler): () => v
 export const WAITS = [1000, 1500, 3000, 5000] as const;
 
 /** The localStorage key of the reader's settings. */
-const STORAGE = "spike-html-design.keys";
+const STORAGE = "spike-html-apps-foundation.keys";
 
 /** Each setting's check: the values a reader can choose. */
 const VALID: Record<keyof Settings, (value: unknown) => boolean> = {

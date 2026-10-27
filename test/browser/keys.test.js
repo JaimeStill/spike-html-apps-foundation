@@ -1,6 +1,6 @@
 // The keys runtime and its help dialog from the package's dist/, pressed with real keys
 // through the DevTools Protocol on test/fixtures/keys*.html.
-// From spike-html-packages-foundation (5dd8a58): test/browser/keys.test.js.
+// Adapted from spike-html-packages-foundation (5dd8a58): test/browser/keys.test.js.
 
 import assert from "node:assert/strict";
 import { mkdtemp, rm, symlink, writeFile } from "node:fs/promises";
@@ -12,7 +12,7 @@ import { launch } from "./support/browser-pipe.js";
 import { root, serve } from "./support/server.js";
 
 const KEYS = "/dist/keys.js";
-const STORE = 'globalThis[Symbol.for("spike-html-design.keys")]';
+const STORE = 'globalThis[Symbol.for("spike-html-apps-foundation.keys")]';
 // The sequence wait the tests set, short so a test waits it out quickly.
 const WAIT = 150;
 
@@ -501,15 +501,16 @@ const declared = (page) =>
 const store = (page, value) => {
   const json = JSON.stringify(typeof value === "string" ? value : JSON.stringify(value));
   return page.evaluate(`(() => {
-    const oldValue = localStorage.getItem("spike-html-design.keys");
-    localStorage.setItem("spike-html-design.keys", ${json});
-    dispatchEvent(new StorageEvent("storage", { key: "spike-html-design.keys", oldValue,
+    const oldValue = localStorage.getItem("spike-html-apps-foundation.keys");
+    localStorage.setItem("spike-html-apps-foundation.keys", ${json});
+    dispatchEvent(new StorageEvent("storage", { key: "spike-html-apps-foundation.keys", oldValue,
       newValue: ${json}, storageArea: localStorage, url: location.href }));
   })()`);
 };
 
 /** The reader's stored settings, or null. */
-const saved = (page) => page.evaluate(`JSON.parse(localStorage.getItem("spike-html-design.keys"))`);
+const saved = (page) =>
+  page.evaluate(`JSON.parse(localStorage.getItem("spike-html-apps-foundation.keys"))`);
 
 /** Presses each of the settings fixture's bindings as written. */
 async function pressAll(page) {
@@ -644,7 +645,9 @@ describe("keys: aria-keyshortcuts", () => {
 
   test("stored settings apply on load", async () => {
     const page = await open(SETTINGS);
-    await page.evaluate(`localStorage.setItem("spike-html-design.keys", '{"enabled":false}')`);
+    await page.evaluate(
+      `localStorage.setItem("spike-html-apps-foundation.keys", '{"enabled":false}')`,
+    );
     await page.goto(fixture(SETTINGS));
     assert.deepEqual(await declared(page), OFF);
   });

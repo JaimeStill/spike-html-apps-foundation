@@ -1,0 +1,10 @@
+/* A conforming space profile the fixture page never registers. It fails registered alone. */
+
+@layer foundation.tokens.space {
+  :where([data-space="unregistered"]) {
+    --space-base: 1rem;
+    --line-s: 1px;
+    --line-m: 2px;
+    --radius-base: 0.375rem;
+  }
+}

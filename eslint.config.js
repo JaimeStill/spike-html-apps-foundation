@@ -1,6 +1,6 @@
 // The lint the check runs: the recommended rules, the layer's imports in src/, and every .css
 // import a CSS module script. test/unit/layers.test.js runs it over test/unit/layers-tree.js.
-// From spike-html-packages-foundation (5dd8a58): eslint.config.js.
+// Adapted from spike-html-packages-foundation (5dd8a58): eslint.config.js.
 
 import js from "@eslint/js";
 import { defineConfig } from "eslint/config";
@@ -53,7 +53,7 @@ const policies = layers.map(({ name, may }) => ({
   allow: { to: may.map((target) => ({ element: { type: target } })) },
 }));
 
-// A declaration file (src/format.d.ts) has no runtime, so an import that resolves to one passes
+// A declaration file (a handwritten .d.ts) has no runtime, so an import that resolves to one passes
 // only as a type import, `import type` or `export type`, which tsc erases: the last policy refuses
 // any other kind, and as the last whose selector matches it overrides the allow before it. The
 // dependency's kind is the declaration's, so `import { type X }` is a value import here, as it is

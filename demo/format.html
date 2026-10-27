@@ -1,0 +1,77 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>foundation formatters</title>
+    <!-- Each Intl formatter from dist/format.js, called on sample values in the browser's own
+         locale and time zone, with what it printed. Its module runs served only: mise run demo. -->
+    <link rel="stylesheet" href="../dist/page.css" />
+    <link rel="stylesheet" href="demo.css" />
+    <script type="module">
+      import {
+        formatBytes,
+        formatDate,
+        formatDateTime,
+        formatDuration,
+        formatRelative,
+      } from "../dist/format.js";
+
+      // One now for every call, so formatRelative's offsets land on their units exactly.
+      const now = Date.now();
+      const day = 86_400_000;
+      // Each call as the page shows it, and the formatter's output for it.
+      const calls = [
+        ["formatBytes(999)", formatBytes(999)],
+        ["formatBytes(1000)", formatBytes(1000)],
+        ["formatBytes(123456789)", formatBytes(123_456_789)],
+        ["formatBytes(4.2e15)", formatBytes(4.2e15)],
+        ['formatBytes(1500, undefined, { unitDisplay: "long" })', formatBytes(1500, undefined, { unitDisplay: "long" })],
+        ["formatDate(now)", formatDate(now)],
+        ['formatDate(now, undefined, { year: "numeric" })', formatDate(now, undefined, { year: "numeric" })],
+        ["formatDateTime(now)", formatDateTime(now)],
+        ["formatRelative(now - 59 s, undefined, { now })", formatRelative(now - 59_000, undefined, { now })],
+        ["formatRelative(now - 3 days, undefined, { now })", formatRelative(now - 3 * day, undefined, { now })],
+        ["formatRelative(now + 30 days, undefined, { now })", formatRelative(now + 30 * day, undefined, { now })],
+        ["formatRelative(now - 400 days, undefined, { now })", formatRelative(now - 400 * day, undefined, { now })],
+        ["formatDuration(0)", formatDuration(0)],
+        ["formatDuration(999)", formatDuration(999)],
+        ["formatDuration(93784000)", formatDuration(93_784_000)],
+        ['formatDuration(93784000, undefined, { style: "long" })', formatDuration(93_784_000, undefined, { style: "long" })],
+        ['formatDuration(93784000, undefined, { style: "digital" })', formatDuration(93_784_000, undefined, { style: "digital" })],
+      ];
+
+      const rows = document.getElementById("calls");
+      for (const [call, output] of calls) {
+        const row = rows.insertRow();
+        const code = document.createElement("code");
+        code.textContent = call;
+        row.insertCell().append(code);
+        row.insertCell().textContent = output;
+      }
+    </script>
+  </head>
+  <body>
+    <main>
+      <h1>Foundation formatters</h1>
+      <p>
+        <code>format.js</code>'s five formatters, on Intl alone, in this browser's locale and time
+        zone.
+      </p>
+      <div class="scroll-x">
+        <table class="table-striped">
+          <caption>
+            Each call and what it printed
+          </caption>
+          <thead>
+            <tr>
+              <th>Call</th>
+              <th>Output</th>
+            </tr>
+          </thead>
+          <tbody id="calls"></tbody>
+        </table>
+      </div>
+    </main>
+  </body>
+</html>

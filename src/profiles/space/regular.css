@@ -1,0 +1,39 @@
+/* Adapted from spike-html-packages-foundation (5dd8a58): src/baseline/tokens/space/regular.css */
+
+/*
+ * Ported from spike-html-design v0.7.0, commit fe75220: layers/tokens/space/regular.css.
+ *
+ * The content is upstream's but for the block that wraps it in the foundation.tokens.space layer,
+ * the layer names its comments give, spike-html-design.* upstream and foundation.* here, and the
+ * paragraph on how a page takes the unit, written for this package. The port is this repository's
+ * own code: Prettier formats it, and the browser tier holds what it computes, not its text, to
+ * upstream's.
+ */
+
+/*
+ * layers/tokens/space/regular.css, the regular profile of the space facet, the default: one
+ * zero-specificity block, applied by data-space="regular" on any element to its subtree and on
+ * the root with no attribute anywhere, declaring the four values the space tokens derive from.
+ * The tokens' roles, what derives from these values, and how a profile is selected are the
+ * facet's, in layers/tokens/space.css.
+ *
+ * The package exports this file as ./profiles/space/regular.css, and its registration module as
+ * ./profiles/space/regular.js: together, the regular unit. Both entries, page.css through
+ * baseline.css and page-full.css, import this sheet into foundation.tokens.space after the facet's
+ * own file, and both registration modules, register.js and register-full.js, import the module,
+ * which registers regular and loads no CSS.
+ */
+
+@layer foundation.tokens.space {
+  :where(:root, [data-space="regular"]) {
+    /* The base every step multiplies, from 1rem on the narrowest display to 1.125rem on the
+       widest. */
+    --space-base: calc(1rem + (1.125rem - 1rem) * var(--space-fluid));
+
+    /* Border and outline widths, fixed. */
+    --line-s: 1px;
+    --line-m: 2px;
+
+    --radius-base: 0.375rem;
+  }
+}

@@ -1,0 +1,13 @@
+/* A type profile that sets seven of the eight values: no --leading-code. It fails tokens alone. */
+
+@layer foundation.tokens.type {
+  :where([data-type="missing"]) {
+    --font-body: system-ui, sans-serif;
+    --font-heading: system-ui, sans-serif;
+    --font-ui: ui-monospace, monospace;
+    --font-code: ui-monospace, monospace;
+    --leading-body: 1.5;
+    --leading-heading: 1.2;
+    --leading-ui: 1.25;
+  }
+}

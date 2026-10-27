@@ -1,0 +1,50 @@
+/* From spike-html-design (fe75220): layers/tokens/color/catppuccin.css */
+/*
+ * Colors from Catppuccin (MIT, Catppuccin), https://github.com/catppuccin/palette, at v1.8.0: latte
+ * in light and mocha in dark, from palette.json.
+ *
+ * layers/tokens/color/catppuccin.css, the Catppuccin profile of the color facet: one
+ * zero-specificity block, applied by data-palette="catppuccin" on any element to its subtree,
+ * declaring the sixteen color tokens as light-dark() pairs, latte / mocha, and nothing else. The
+ * tokens' roles and how a profile is selected are the facet's, in layers/tokens/color.css. Each
+ * value's comment names its upstream swatch, latte / mocha, or the one name both share.
+ *
+ * The package exports this file as ./profiles/catppuccin. A page that links the lean entry imports
+ * it into the color sub-layer, after the entry, and names it with data-palette; <base> is where the
+ * entry is served from, as a jsDelivr tag's root:
+ *
+ *   <link rel="stylesheet" href="<base>/baseline.css" />
+ *   <style>
+ *     @import url(<base>/layers/tokens/color/catppuccin.css)
+ *       layer(spike-html-design.tokens.color);
+ *   </style>
+ *   <html data-palette="catppuccin">
+ *
+ * The full entry, full.css, imports it already, after Flexoki. Linked on its own, its rules would
+ * be unlayered.
+ */
+
+:where([data-palette="catppuccin"]) {
+  /* Surfaces: the base, the first elevated surface, the element surface, the border and the
+     control boundary. */
+  --bg: light-dark(#eff1f5, #181825); /* base / mantle */
+  --bg-1: light-dark(#e6e9ef, #1e1e2e); /* mantle / base */
+  --bg-2: light-dark(#ccd0da, #313244); /* surface0 */
+  --border: light-dark(#bcc0cc, #45475a); /* surface1 */
+  --border-2: light-dark(#9ca0b0, #6c7086); /* overlay0 */
+
+  /* Text, from the strongest down. */
+  --fg: light-dark(#4c4f69, #cdd6f4); /* text */
+  --fg-2: light-dark(#6c6f85, #a6adc8); /* subtext0 */
+  --fg-3: light-dark(#8c8fa1, #7f849c); /* overlay1 */
+
+  /* Hues: one token per color, named for the color, never for a meaning. */
+  --red: light-dark(#d20f39, #f38ba8); /* red */
+  --orange: light-dark(#fe640b, #fab387); /* peach */
+  --yellow: light-dark(#df8e1d, #f9e2af); /* yellow */
+  --green: light-dark(#40a02b, #a6e3a1); /* green */
+  --cyan: light-dark(#179299, #94e2d5); /* teal */
+  --blue: light-dark(#1e66f5, #89b4fa); /* blue */
+  --purple: light-dark(#8839ef, #cba6f7); /* mauve */
+  --magenta: light-dark(#ea76cb, #f5c2e7); /* pink */
+}

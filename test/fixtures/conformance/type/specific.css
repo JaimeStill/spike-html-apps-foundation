@@ -1,0 +1,15 @@
+/* A type profile whose selector has specificity (0,1,0), with no :where(). It fails specificity
+   alone. */
+
+@layer foundation.tokens.type {
+  [data-type="specific"] {
+    --font-body: system-ui, sans-serif;
+    --font-heading: system-ui, sans-serif;
+    --font-ui: ui-monospace, monospace;
+    --font-code: ui-monospace, monospace;
+    --leading-body: 1.5;
+    --leading-heading: 1.2;
+    --leading-ui: 1.25;
+    --leading-code: 1.5;
+  }
+}

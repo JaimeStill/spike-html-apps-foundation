@@ -1,0 +1,68 @@
+/* Adapted from spike-html-design (fe75220): layers/tokens/color/everforest.css */
+
+/*
+ * The content is upstream's but for the block that wraps it in the foundation.tokens.color layer,
+ * the layer names its comments give, spike-html-design.* upstream and foundation.* here, and the
+ * paragraph on how a page takes the unit, written for this package. The port is this repository's
+ * own code: Prettier formats it, and the browser tier holds what it computes, not its text, to
+ * upstream's.
+ */
+
+/*
+ * Colors from Everforest (MIT, sainnhe), https://github.com/sainnhe/everforest, at v0.3.0: hard in
+ * light and hard in dark, its hard-background variants, from the palette in
+ * autoload/everforest.vim.
+ *
+ * layers/tokens/color/everforest.css, the Everforest profile of the color facet: one
+ * zero-specificity block, applied by data-palette="everforest" on any element to its subtree,
+ * declaring the sixteen color tokens as light-dark() pairs, hard light / hard dark, and nothing
+ * else. The tokens' roles and how a profile is selected are the facet's, in
+ * layers/tokens/color.css. Each value's comment names its upstream swatch, light / dark, or the
+ * one name both share. Everforest has no magenta of its own: its purple is a pink-magenta and
+ * fills the terminal's magenta slot, so --purple and --magenta both take it.
+ * The surfaces step toward the text in lightness order: in light, bg1 is lighter than bg_dim, so
+ * --bg, --bg-1 and --bg-2 take bg0, bg1 and bg_dim; in dark, bg_dim, bg0 and bg1.
+ *
+ * The package exports this file as ./profiles/color/everforest.css, and its registration module as
+ * ./profiles/color/everforest.js: together, the Everforest unit. A page that links the lean entry,
+ * page.css, links this sheet after it, which layers itself into foundation.tokens.color after
+ * Flexoki, and imports the module, which registers everforest and loads no CSS; data-palette then
+ * names it, and the theme menu lists it. <base> is where the package is served from, as a jsDelivr
+ * tag's dist/:
+ *
+ *   <link rel="stylesheet" href="<base>/page.css" />
+ *   <link rel="stylesheet" href="<base>/profiles/color/everforest.css" />
+ *   <script type="module" blocking="render" src="<base>/register.js"></script>
+ *   <script type="module" blocking="render" src="<base>/profiles/color/everforest.js"></script>
+ *   <html data-palette="everforest">
+ *
+ * The full entry, page-full.css, imports this sheet already, after Flexoki, and register-full.js
+ * imports the module.
+ */
+
+@layer foundation.tokens.color {
+  :where([data-palette="everforest"]) {
+    /* Surfaces: the base, the first elevated surface, the element surface, the border and the
+       control boundary. */
+    --bg: light-dark(#fffbef, #1e2326); /* bg0 / bg_dim */
+    --bg-1: light-dark(#f8f5e4, #272e33); /* bg1 / bg0 */
+    --bg-2: light-dark(#f2efdf, #2e383c); /* bg_dim / bg1 */
+    --border: light-dark(#edeada, #374145); /* bg3 / bg2 */
+    --border-2: light-dark(#bec5b2, #4f5b58); /* bg5 */
+
+    /* Text, from the strongest down. */
+    --fg: light-dark(#5c6a72, #d3c6aa); /* fg */
+    --fg-2: light-dark(#829181, #9da9a0); /* grey2 */
+    --fg-3: light-dark(#939f91, #859289); /* grey1 */
+
+    /* Hues: one token per color, named for the color, never for a meaning. */
+    --red: light-dark(#f85552, #e67e80); /* red */
+    --orange: light-dark(#f57d26, #e69875); /* orange */
+    --yellow: light-dark(#dfa000, #dbbc7f); /* yellow */
+    --green: light-dark(#8da101, #a7c080); /* green */
+    --cyan: light-dark(#35a77c, #83c092); /* aqua */
+    --blue: light-dark(#3a94c5, #7fbbb3); /* blue */
+    --purple: light-dark(#df69ba, #d699b6); /* purple */
+    --magenta: light-dark(#df69ba, #d699b6); /* purple */
+  }
+}

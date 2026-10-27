@@ -1,6 +1,6 @@
 // The page's registry of the profiles it can apply, per facet, in one store at a well-known global
 // key, so every copy of this module, from any URL or tag, registers into the same lists.
-// From spike-html-packages-foundation (5dd8a58): src/registry.ts.
+// Adapted from spike-html-packages-foundation (5dd8a58): src/registry.ts.
 
 /** A facet a profile belongs to. */
 export type Facet = "color" | "space" | "type";
@@ -19,7 +19,7 @@ export const DEFAULTS: Readonly<Record<Facet, string>> = Object.freeze({
 });
 
 /** The store's well-known global key, shared by every copy of the module. */
-const KEY = Symbol.for("spike-html-design.registry");
+const KEY = Symbol.for("spike-html-apps-foundation.registry");
 const scope = globalThis as typeof globalThis & Record<symbol, Store | undefined>;
 scope[KEY] ??= { color: [], space: [], type: [] };
 const store: Store = scope[KEY];

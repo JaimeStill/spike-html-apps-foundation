@@ -1,0 +1,21 @@
+<!doctype html>
+<!-- Adapted from spike-html-design (fe75220): test/fixtures/conformance-cdn.html. -->
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <title>conformance cross-origin fixture</title>
+    <!-- The full entry from the origin the sheets parameter names, as a page links it from a CDN:
+         a cross-origin sheet served without CORS, so chromium hides its rules, and only computed
+         values can be read. Written in by the parser, so it blocks rendering and the load event as
+         a link in the markup does. -->
+    <script>
+      const sheets = new URLSearchParams(location.search).get("sheets");
+      document.write(`<link rel="stylesheet" href="${sheets}/dist/page-full.css" />`);
+    </script>
+    <script type="module" src="../../dist/register-full.js"></script>
+  </head>
+  <body>
+    <h1>conformance cross-origin fixture</h1>
+    <p>The full entry from another origin and its registration module from this one. The tests run the conformance check on each built-in profile.</p>
+  </body>
+</html>

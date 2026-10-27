@@ -9,6 +9,7 @@
          demo.
          From spike-html-packages-foundation (5dd8a58): demo/keys.html. -->
     <link rel="stylesheet" href="../dist/page.css" />
+    <link rel="stylesheet" href="demo.css" />
     <script type="module" src="../dist/keys.js"></script>
     <script type="module">
       import { register } from "../dist/keys.js";
@@ -65,9 +66,11 @@
       <div data-keys-list>
         <p>The shortcuts run when this page is served: mise run demo.</p>
       </div>
-      <button type="button" commandfor="help" command="close" data-keys="?">
-        Close <kbd>?</kbd>
-      </button>
+      <footer>
+        <button type="button" commandfor="help" command="close" data-keys="?">
+          Close <kbd>?</kbd>
+        </button>
+      </footer>
     </dialog>
   </body>
 </html>

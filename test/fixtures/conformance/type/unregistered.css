@@ -1,0 +1,14 @@
+/* A conforming type profile the fixture page never registers. It fails registered alone. */
+
+@layer foundation.tokens.type {
+  :where([data-type="unregistered"]) {
+    --font-body: system-ui, sans-serif;
+    --font-heading: system-ui, sans-serif;
+    --font-ui: ui-monospace, monospace;
+    --font-code: ui-monospace, monospace;
+    --leading-body: 1.5;
+    --leading-heading: 1.2;
+    --leading-ui: 1.25;
+    --leading-code: 1.5;
+  }
+}

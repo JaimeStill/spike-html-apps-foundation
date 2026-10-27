@@ -1,0 +1,65 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>foundation theme</title>
+    <!-- The theme menu from dist/, on the full page entry: the Theme button, or T through keys.js,
+         opens <sl-theme-menu>, and its choice applies to this page, survives a reload, and follows
+         into a second tab of the page. The tools page, demo/tools.html, carries no Theme button:
+         the browser tier compares its every element against v0.7.0 with no profile attribute. Its
+         modules run served only: mise run demo. -->
+    <link rel="stylesheet" href="../dist/page-full.css" />
+    <link rel="stylesheet" href="demo.css" />
+    <script type="module" blocking="render" src="../dist/register-full.js"></script>
+    <script type="module" blocking="render" src="../dist/preferences.js"></script>
+    <script type="module" src="../dist/keys.js"></script>
+  </head>
+  <body>
+    <main>
+      <h1>Foundation theme</h1>
+      <p>
+        <button type="button" commandfor="theme" command="--open" data-keys="t">
+          Theme <kbd>T</kbd>
+        </button>
+      </p>
+      <p>
+        Pick a color profile, a scheme, a space, and a type in the menu: each change applies at
+        once, Save or <kbd>T</kbd> keeps it, and Cancel or <kbd>Esc</kbd> restores what applied
+        before. Reload, or open this page in a second tab, to see the choice kept.
+      </p>
+      <p>
+        <a class="button" href="#theme">A link button</a>
+        <button class="button-blue" type="button">Deploy</button>
+        <button class="button-red" type="button">Delete</button>
+        <button class="button-green" type="button" disabled>Disabled</button>
+      </p>
+      <div class="field">
+        <label for="branch">Branch</label>
+        <input id="branch" class="field-grow" type="text" value="main" />
+      </div>
+      <table class="table-striped">
+        <thead>
+          <tr>
+            <th scope="col">Run</th>
+            <th scope="col">Status</th>
+            <th scope="col">Time</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>1204</td>
+            <td>passed</td>
+            <td>2m 14s</td>
+          </tr>
+          <tr>
+            <td>1205</td>
+            <td>failed</td>
+            <td>48s</td>
+          </tr>
+        </tbody>
+      </table>
+    </main>
+    <sl-theme-menu id="theme"></sl-theme-menu>
+  </body>
+</html>

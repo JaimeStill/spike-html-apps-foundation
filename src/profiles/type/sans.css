@@ -1,0 +1,47 @@
+/* Adapted from spike-html-design (fe75220): layers/tokens/type/sans.css */
+
+/*
+ * The content is upstream's but for the block that wraps it in the foundation.tokens.type layer,
+ * the layer names its comments give, spike-html-design.* upstream and foundation.* here, and the
+ * paragraph on how a page takes the unit, written for this package. The port is this repository's
+ * own code: Prettier formats it, and the browser tier holds what it computes, not its text, to
+ * upstream's.
+ */
+
+/*
+ * layers/tokens/type/sans.css, the sans profile of the type facet: one zero-specificity block,
+ * applied by data-type="sans" on any element to its subtree, declaring the four role fonts and the
+ * four role leadings. Headings, interface controls, and the body take the system sans stack mono
+ * gives the body; code stays mono, and the leadings are mono's. It declares all eight tokens, not
+ * only the two it changes, so the nearest scope wins for every type token. The tokens' roles and
+ * how a profile is selected are the facet's, in layers/tokens/type.css.
+ *
+ * The package exports this file as ./profiles/type/sans.css, and its registration module as
+ * ./profiles/type/sans.js: together, the sans unit. A page that links the lean entry, page.css,
+ * links this sheet after it, which layers itself into foundation.tokens.type after mono, and
+ * imports the module, which registers sans and loads no CSS; data-type then names it, and the theme
+ * menu lists it. The full entry, page-full.css, imports this sheet already, after mono, and
+ * register-full.js imports the module.
+ */
+
+@layer foundation.tokens.type {
+  :where([data-type="sans"]) {
+    --font-body:
+      system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen, Ubuntu, Cantarell,
+      sans-serif;
+    --font-heading:
+      system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen, Ubuntu, Cantarell,
+      sans-serif;
+    --font-ui:
+      system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen, Ubuntu, Cantarell,
+      sans-serif;
+    --font-code:
+      ui-monospace, "Cascadia Code", "Source Code Pro", Menlo, Consolas, "DejaVu Sans Mono",
+      monospace;
+
+    --leading-body: 1.5;
+    --leading-heading: 1.2;
+    --leading-ui: 1.25;
+    --leading-code: 1.5;
+  }
+}

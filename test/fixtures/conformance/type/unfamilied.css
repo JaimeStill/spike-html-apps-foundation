@@ -1,0 +1,15 @@
+/* A type profile whose --font-code is a font shorthand, a size before the family, which is no
+   font-family value. It fails scale alone. */
+
+@layer foundation.tokens.type {
+  :where([data-type="unfamilied"]) {
+    --font-body: system-ui, sans-serif;
+    --font-heading: system-ui, sans-serif;
+    --font-ui: ui-monospace, monospace;
+    --font-code: 14px monospace;
+    --leading-body: 1.5;
+    --leading-heading: 1.2;
+    --leading-ui: 1.25;
+    --leading-code: 1.5;
+  }
+}

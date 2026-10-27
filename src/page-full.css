@@ -1,0 +1,27 @@
+/*
+ * The foundation's full page entry: everything page.css holds and every other built-in unit's
+ * sheet, each facet's after its default in its sub-layer, so an attribute on the root selects one
+ * by order alone. A plain aggregator, self-contained: a page links it or page.css, never both.
+ * Adapted from spike-html-design (fe75220): full.css.
+ */
+
+/* Comes first to fix the order, and names the same layers as page.css's, in the same order. */
+
+@layer foundation.tokens.color, foundation.tokens.space, foundation.tokens.type, foundation.reset, foundation.elements, foundation.meta, foundation.structure, foundation.utilities, foundation.theme-menu;
+
+@import url(./baseline/tokens/color.css);
+@import url(./profiles/color/flexoki.css);
+@import url(./profiles/color/primer.css);
+@import url(./profiles/color/catppuccin.css);
+@import url(./profiles/color/everforest.css);
+@import url(./baseline/tokens/space.css);
+@import url(./profiles/space/regular.css);
+@import url(./profiles/space/compact.css);
+@import url(./baseline/tokens/type.css);
+@import url(./profiles/type/mono.css);
+@import url(./profiles/type/sans.css);
+@import url(./baseline/reset.css);
+@import url(./baseline/elements.css);
+@import url(./meta.css);
+@import url(./structure.css);
+@import url(./utilities.css);

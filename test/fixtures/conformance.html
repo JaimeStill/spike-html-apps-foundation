@@ -1,0 +1,50 @@
+<!doctype html>
+<!-- Adapted from spike-html-design (fe75220): test/fixtures/conformance.html. -->
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <title>conformance fixture</title>
+    <link rel="stylesheet" href="../../dist/page-full.css" />
+    <!-- The fixture profiles an extension would add, each breaking one rule of its facet's
+         contract, linked after the entry as a page adds a unit beyond it: each sheet self-layers
+         in its facet's sub-layer, but for the unlayered ones, whose blocks are unlayered. -->
+    <link rel="stylesheet" href="conformance/color/missing.css" />
+    <link rel="stylesheet" href="conformance/color/spacing.css" />
+    <link rel="stylesheet" href="conformance/color/specific.css" />
+    <link rel="stylesheet" href="conformance/color/surfaces.css" />
+    <link rel="stylesheet" href="conformance/color/unlayered.css" />
+    <link rel="stylesheet" href="conformance/color/unpainted.css" />
+    <link rel="stylesheet" href="conformance/color/unregistered.css" />
+    <link rel="stylesheet" href="conformance/space/coloring.css" />
+    <link rel="stylesheet" href="conformance/space/flat.css" />
+    <link rel="stylesheet" href="conformance/space/missing.css" />
+    <link rel="stylesheet" href="conformance/space/specific.css" />
+    <link rel="stylesheet" href="conformance/space/unlayered.css" />
+    <link rel="stylesheet" href="conformance/space/unregistered.css" />
+    <link rel="stylesheet" href="conformance/type/descending.css" />
+    <link rel="stylesheet" href="conformance/type/missing.css" />
+    <link rel="stylesheet" href="conformance/type/spacing.css" />
+    <link rel="stylesheet" href="conformance/type/specific.css" />
+    <link rel="stylesheet" href="conformance/type/unfamilied.css" />
+    <link rel="stylesheet" href="conformance/type/unlayered.css" />
+    <link rel="stylesheet" href="conformance/type/unregistered.css" />
+    <script type="module">
+      import { register } from "../../dist/registry.js";
+      import "../../dist/register-full.js";
+
+      // Every fixture profile but each facet's unregistered one is registered.
+      const fixtures = {
+        color: ["missing", "spacing", "unlayered", "specific", "unpainted", "surfaces"],
+        space: ["missing", "coloring", "unlayered", "specific", "flat"],
+        type: ["missing", "spacing", "unlayered", "specific", "descending", "unfamilied"],
+      };
+      for (const [facet, names] of Object.entries(fixtures)) {
+        for (const name of names) register(facet, name);
+      }
+    </script>
+  </head>
+  <body>
+    <h1>conformance fixture</h1>
+    <p>The full entry's eight profiles, and, per facet, fixture profiles that each break one rule of the facet's contract alone. The tests run the conformance check on each name.</p>
+  </body>
+</html>

@@ -1,0 +1,24 @@
+/* From spike-html-design (fe75220): layers/tokens/space/compact.css */
+/*
+ * layers/tokens/space/compact.css, the compact profile of the space facet: one zero-specificity
+ * block, applied by data-space="compact" on any element to its subtree, declaring the four values
+ * the space tokens derive from. It is denser than regular: a smaller base and tighter radii, with
+ * the same line widths. The tokens' roles, what derives from these values, and how a profile is
+ * selected are the facet's, in layers/tokens/space.css.
+ *
+ * A page that links the lean entry imports it into the space sub-layer, after the entry, and
+ * names it with data-space; the full entry, full.css, imports it already, after regular. Linked
+ * on its own, its rules would be unlayered.
+ */
+
+:where([data-space="compact"]) {
+  /* The base every step multiplies, from 0.75rem on the narrowest display to 0.875rem on the
+     widest. */
+  --space-base: calc(0.75rem + (0.875rem - 0.75rem) * var(--space-fluid));
+
+  /* Border and outline widths, fixed. */
+  --line-s: 1px;
+  --line-m: 2px;
+
+  --radius-base: 0.25rem;
+}

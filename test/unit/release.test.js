@@ -1,7 +1,7 @@
 // The release's integrity: a pnpm pack of the build, extracted, against package.json's files and
 // exports and against its license, by release.js's releaseProblems, as it stands and in scratch
 // copies with one fault each. It packs the dist/ that mise run build writes.
-// From spike-html-packages-foundation (5dd8a58): test/unit/release.test.js.
+// Adapted from spike-html-packages-foundation (5dd8a58): test/unit/release.test.js.
 
 import assert from "node:assert/strict";
 import { execFileSync } from "node:child_process";
@@ -72,8 +72,8 @@ describe("release pack", () => {
       "src/registry.ts has no built dist/registry.d.ts",
     ],
     "a .d.ts source with no copy": [
-      remove("dist/format.d.ts"),
-      "src/format.d.ts has no built dist/format.d.ts",
+      remove("dist/css.d.ts"),
+      "src/css.d.ts has no built dist/css.d.ts",
     ],
     "a stray built file": [
       (dir) => writeFileSync(join(dir, "dist/old.js"), ""),
