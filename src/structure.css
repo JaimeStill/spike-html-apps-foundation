@@ -1,0 +1,21 @@
+/*
+ * The foundation's structure sheet: the field stack. Self-layered and importing nothing, so a
+ * shadow root adopts it alone.
+ * From spike-html-packages-foundation (5dd8a58): src/structure.css.
+ * Adapted from spike-html-design v0.7.0 (fe75220): layers/tools.css.
+ */
+
+@layer foundation.structure {
+  .field {
+    display: grid;
+    justify-items: start;
+    gap: var(--space-3xs);
+  }
+
+  /* field-sizing is Baseline newly available; without it the control keeps its native size. */
+  .field-grow {
+    field-sizing: content;
+    min-inline-size: 8ch;
+    max-inline-size: 100%;
+  }
+}
