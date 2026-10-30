@@ -8,7 +8,7 @@ import { tmpdir } from "node:os";
 import { join } from "node:path";
 import { after, afterEach, before, describe, test } from "node:test";
 
-import { launch } from "@jaimestill/spike-html-apps-tooling/browser.js";
+import { launch, until } from "@jaimestill/spike-html-apps-tooling/browser.js";
 import { serve } from "@jaimestill/spike-html-apps-tooling/server.js";
 
 /** The repository root, which the server serves. */
@@ -708,18 +708,12 @@ describe("keys: the help dialog", () => {
       `performance.getEntriesByType("resource").some(({ name }) => name.endsWith("/keys-help.js"))`,
     );
 
-  /** Resolves once the help dialog is open and filled, or rejects after 2 s. */
+  /** Resolves once the help dialog is open and filled. */
   const filled = (page) =>
-    page.evaluate(`new Promise((resolve, reject) => {
-      const end = performance.now() + 2000;
-      const poll = () => {
-        const dialog = document.getElementById("help");
-        if (dialog.open && dialog.querySelector("[data-keys-list] [data-keys-table]")) resolve(true);
-        else if (performance.now() > end) reject(new Error("help: not filled"));
-        else setTimeout(poll, 10);
-      };
-      poll();
-    })`);
+    until(
+      page,
+      `document.getElementById("help").open && !!document.querySelector("#help [data-keys-list] [data-keys-table]")`,
+    );
 
   /** Opens the dialog from its Help button, a show-modal invoker. */
   const clickHelp = (page) =>

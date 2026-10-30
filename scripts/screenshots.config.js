@@ -48,12 +48,8 @@ const FULL_ENTRY = `(async () => {
 /** @type {import("@jaimestill/spike-html-apps-tooling/screenshots.js").Description} */
 export default {
   pages: [
-    {
-      name: "tools",
-      caption: "the tools page",
-      path: "demo/tools.html",
-      states: [{ name: "tools", caption: "the tools page", full: true }],
-    },
+    // One full-page capture, the bin's default state.
+    { name: "tools", caption: "the tools page", path: "demo/tools.html" },
     {
       name: "keys",
       caption: "keys help open",

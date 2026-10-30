@@ -9,7 +9,7 @@ import assert from "node:assert/strict";
 import { join } from "node:path";
 import { after, afterEach, before, describe, test } from "node:test";
 
-import { launch } from "@jaimestill/spike-html-apps-tooling/browser.js";
+import { launch, until } from "@jaimestill/spike-html-apps-tooling/browser.js";
 import { serve } from "@jaimestill/spike-html-apps-tooling/server.js";
 
 /** The repository root, which the server serves. */
@@ -87,18 +87,6 @@ const rooted = (page) =>
   page.evaluate(`Object.fromEntries(["data-palette", "data-space", "data-type", "data-scheme"]
     .map((name) => [name, document.documentElement.getAttribute(name)]))`);
 
-/** Resolves once the expression is truthy in the page, or rejects after the timeout. */
-const waitFor = (page, expression, timeout = 2000) =>
-  page.evaluate(`new Promise((resolve, reject) => {
-    const end = performance.now() + ${timeout};
-    const poll = () => {
-      if (${expression}) resolve(true);
-      else if (performance.now() > end) reject(new Error("timed out: " + ${JSON.stringify(expression)}));
-      else setTimeout(poll, 10);
-    };
-    poll();
-  })`);
-
 /** Resolves after ms, as measured in the page. */
 const sleep = (page, ms) => page.evaluate(`new Promise((resolve) => setTimeout(resolve, ${ms}))`);
 
@@ -129,7 +117,7 @@ async function press(page, key, { repeat = false } = {}) {
 /** Clicks the page's Theme button and resolves once its menu is open. */
 async function clickTheme(page) {
   await page.evaluate(`document.querySelector(${JSON.stringify(MENU)}).click()`);
-  await waitFor(page, `document.querySelector(${JSON.stringify(DIALOG)})?.open`);
+  await until(page, `document.querySelector(${JSON.stringify(DIALOG)})?.open`);
 }
 
 /** Loads the fixture with the value stored (see seed) and opens its menu. */
@@ -142,7 +130,7 @@ async function openMenu(value = null, name = "preferences.html") {
 
 /** Resolves once the page's menu has closed. */
 const closed = (page) =>
-  waitFor(page, `!document.querySelector("sl-theme-menu").hasAttribute("data-open")`);
+  until(page, `!document.querySelector("sl-theme-menu").hasAttribute("data-open")`);
 
 /**
  * The open menu's focus, as [section, value] of the focused radio, its selection per section, and
@@ -301,7 +289,7 @@ describe("preferences: the flash", () => {
     });
     await page.cdp("Fetch.enable", { patterns: [{ urlPattern: "*/dist/*.js" }] });
     await page.goto(fixture(name));
-    await waitFor(page, "window.flash.paint !== null", 5000);
+    await until(page, "window.flash.paint !== null", 5000);
     return { page, ...(await page.evaluate("window.flash")) };
   }
 
@@ -323,11 +311,11 @@ describe("preferences: the storage event", () => {
     const saver = await open(fixture("preferences.html"));
     const page = await open(fixture("preferences.html"));
     await call(saver, `preferences.save(${JSON.stringify(CHOICE)})`);
-    await waitFor(page, `document.documentElement.getAttribute("data-palette") === "primer"`);
+    await until(page, `document.documentElement.getAttribute("data-palette") === "primer"`);
     assert.deepEqual(await rooted(page), APPLIED);
     // A cleared key restores the defaults.
     await saver.evaluate("localStorage.clear()");
-    await waitFor(page, `!document.documentElement.hasAttribute("data-palette")`);
+    await until(page, `!document.documentElement.hasAttribute("data-palette")`);
     assert.deepEqual(await rooted(page), NONE);
   });
 
@@ -338,7 +326,7 @@ describe("preferences: the storage event", () => {
     assert.equal((await rooted(page))["data-palette"], "catppuccin");
     const next = { color: "everforest", space: "regular", type: "mono", scheme: "light" };
     await call(saver, `preferences.save(${JSON.stringify(next)})`);
-    await waitFor(
+    await until(
       page,
       `JSON.parse(localStorage.getItem(${JSON.stringify(KEY)})).color === "everforest"`,
     );
@@ -360,7 +348,7 @@ describe("preferences: the storage event", () => {
     });
     // Closed again: the next save applies.
     await call(saver, `preferences.save(${JSON.stringify({ ...next, color: "primer" })})`);
-    await waitFor(page, `document.documentElement.getAttribute("data-palette") === "primer"`);
+    await until(page, `document.documentElement.getAttribute("data-palette") === "primer"`);
   });
 });
 
@@ -402,7 +390,7 @@ describe("preferences: <sl-theme-menu>", () => {
     // With it, keys.js clicks the button.
     await page.evaluate(`document.querySelector(${JSON.stringify(MENU)}).dataset.keys = "t"`);
     await press(page, "t");
-    await waitFor(page, `document.querySelector(${JSON.stringify(DIALOG)})?.open`);
+    await until(page, `document.querySelector(${JSON.stringify(DIALOG)})?.open`);
   });
 
   test("two opens while the menu module loads open one menu", async () => {
@@ -413,7 +401,7 @@ describe("preferences: <sl-theme-menu>", () => {
       button.click();
       button.click();
     })()`);
-    await waitFor(page, `document.querySelector(${JSON.stringify(DIALOG)})?.open`);
+    await until(page, `document.querySelector(${JSON.stringify(DIALOG)})?.open`);
     await sleep(page, 100);
     assert.equal(
       await page.evaluate(`document.querySelectorAll(${JSON.stringify(DIALOG)}).length`),
@@ -849,7 +837,7 @@ describe("preferences: demo/theme.html", () => {
     await press(page, "t");
     await closed(page);
     assert.equal((await rooted(page))["data-palette"], "primer");
-    await waitFor(other, `document.documentElement.getAttribute("data-palette") === "primer"`);
+    await until(other, `document.documentElement.getAttribute("data-palette") === "primer"`);
     await page.goto(demo());
     assert.equal((await rooted(page))["data-palette"], "primer");
   });
