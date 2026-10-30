@@ -6,6 +6,8 @@ follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), and the packag
 
 ## [Unreleased]
 
+## [0.2.1] - 2026-10-30
+
 ### Fixed
 
 - The keys runtime tests the field a key was typed in, not the document's retargeted
@@ -69,6 +71,7 @@ follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), and the packag
 - The release by tag: `v<version>`, whose tree is the pack, with the tarball on its GitHub
   release.
 
-[Unreleased]: https://github.com/JaimeStill/spike-html-apps-foundation/compare/v0.2.0...HEAD
+[Unreleased]: https://github.com/JaimeStill/spike-html-apps-foundation/compare/v0.2.1...HEAD
+[0.2.1]: https://github.com/JaimeStill/spike-html-apps-foundation/compare/v0.2.0...v0.2.1
 [0.2.0]: https://github.com/JaimeStill/spike-html-apps-foundation/compare/v0.1.0...v0.2.0
 [0.1.0]: https://github.com/JaimeStill/spike-html-apps-foundation/releases/tag/v0.1.0
