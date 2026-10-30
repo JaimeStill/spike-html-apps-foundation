@@ -111,6 +111,26 @@ const log = (page: Page) => page.evaluate("window.log");
 /** The keys-fire details, in order. */
 const fired = (page: Page): Promise<FireDetail[]> => page.evaluate("window.fired");
 
+/** How long after compositionend keys takes a keydown as the composition's, in ms. */
+const SETTLE = 100;
+
+/**
+ * Dispatches, in one task, a composition on the element with the id, or the body, then a keydown
+ * of each key there as WebKit sends the key that ends one: after compositionend, not composing.
+ */
+const composeThen = (page: Page, id: string | null, keys: string[]) =>
+  page.evaluate(`(() => {
+    const el = ${id ? `document.getElementById(${JSON.stringify(id)})` : "document.body"};
+    for (const type of ["compositionstart", "compositionend"]) {
+      el.dispatchEvent(new CompositionEvent(type, { data: "", bubbles: true, composed: true }));
+    }
+    for (const key of ${JSON.stringify(keys)}) {
+      el.dispatchEvent(new KeyboardEvent("keydown",
+        { key, code: key.length === 1 ? "Key" + key.toUpperCase() : key, bubbles: true,
+          cancelable: true, composed: true }));
+    }
+  })()`);
+
 /** Resolves after ms, as measured in the page. */
 const sleep = (page: Page, ms: number) =>
   page.evaluate(`new Promise((resolve) => setTimeout(resolve, ${ms}))`);
@@ -327,15 +347,54 @@ describe("keys: silence", () => {
   test("nothing fires on a repeat, while composing, on Dead or Process, or with AltGraph", async () => {
     const page = await open();
     await press(page, "t", { repeat: true });
-    await press(page, "t", { keyCode: 229 });
     await press(page, "Dead");
-    await press(page, "Process");
+    // Chrome and Firefox name a press an input method takes, before isComposing is set, Process.
+    await press(page, "Process", { keyCode: 229 });
     await page.evaluate(`for (const init of [{ isComposing: true }, { modifierAltGraph: true }]) {
       document.dispatchEvent(new KeyboardEvent("keydown",
         { key: "t", code: "KeyT", bubbles: true, cancelable: true, ...init }));
     }`);
     assert.deepEqual(await log(page), []);
     assert.deepEqual(await fired(page), []);
+  });
+
+  test("the keydown WebKit sends after compositionend fires nothing, and only that one", async () => {
+    const page = await open();
+    await composeThen(page, null, ["t"]);
+    assert.deepEqual(await log(page), []);
+    await composeThen(page, null, ["t", "t"]);
+    assert.deepEqual(await log(page), ["command --theme"]);
+    assert.deepEqual(await fired(page), [{ binding: "t", keys: ["t"] }]);
+  });
+
+  test("once a composition has settled, the next press fires", async () => {
+    const page = await open();
+    await composeThen(page, null, []);
+    await sleep(page, SETTLE + 50);
+    await press(page, "t");
+    assert.deepEqual(await log(page), ["command --theme"]);
+  });
+
+  test("an input method's composition in a field fires nothing, and Escape then blurs it", async () => {
+    const page = await open();
+    await page.evaluate(`window.composed = [];
+      for (const type of ["compositionstart", "compositionend"]) {
+        document.addEventListener(type, () => window.composed.push(type));
+      }`);
+    await focus(page, "text");
+    await page.cdp("Input.imeSetComposition", { text: "k", selectionStart: 1, selectionEnd: 1 });
+    await page.cdp("Input.imeSetComposition", { text: "か", selectionStart: 1, selectionEnd: 1 });
+    await page.cdp("Input.insertText", { text: "か" });
+    assert.deepEqual(await page.evaluate("window.composed"), [
+      "compositionstart",
+      "compositionend",
+    ]);
+    assert.equal(await page.evaluate(`document.getElementById("text").value`), "か");
+    assert.deepEqual(await log(page), []);
+    assert.equal(await active(page), "text");
+    await sleep(page, SETTLE + 50);
+    await pressEscape(page);
+    assert.equal(await active(page), "body");
   });
 
   test("an event already handled is left alone", async () => {
@@ -424,13 +483,23 @@ describe("keys: Escape releases a field", () => {
     const page = await open();
     await focus(page, "text");
     await pressEscape(page, { repeat: true });
-    await pressEscape(page, { keyCode: 229 });
+    await page.evaluate(`document.getElementById("text").dispatchEvent(new KeyboardEvent("keydown",
+      { key: "Escape", code: "Escape", isComposing: true, bubbles: true, composed: true }))`);
     assert.equal(await active(page), "text");
     await page.evaluate(
       `document.getElementById("text").addEventListener("keydown", (event) => event.preventDefault())`,
     );
     await pressEscape(page);
     assert.equal(await active(page), "text");
+  });
+
+  test("the Escape WebKit sends after compositionend, cancelling it, blurs nothing", async () => {
+    const page = await open();
+    await focus(page, "text");
+    await composeThen(page, "text", ["Escape"]);
+    assert.equal(await active(page), "text");
+    await composeThen(page, "text", ["Escape", "Escape"]);
+    assert.equal(await active(page), "body");
   });
 
   test("an Escape whose listener moved focus on blurs nothing", async () => {

@@ -16,6 +16,13 @@ follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), and the packag
   longer fires and swallows the character, and Escape outside a modal blurs that field as it does
   in light DOM.
 
+### Changed
+
+- The keys runtime's input-method guard no longer reads the deprecated `keyCode`: it passes over
+  a press named `Process` or marked `isComposing`, and it tracks `compositionend`, so the Enter or
+  Escape WebKit sends after a composition ends, not composing, neither fires a binding nor blurs
+  the field. The first keydown within 100 ms of `compositionend` takes the mark.
+
 ## [0.2.0] - 2026-10-27
 
 ### Added
