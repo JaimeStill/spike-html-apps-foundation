@@ -1,7 +1,7 @@
 // The release's integrity: a pnpm pack of the build, extracted, against package.json's files and
-// exports and against its license, by release.js's releaseProblems, as it stands and in scratch
+// exports and against its license, by release.ts's releaseProblems, as it stands and in scratch
 // copies with one fault each. It packs the dist/ that mise run build writes.
-// The pack's runtime files are held to the layer's brotli budget by budget.js's budgetProblems.
+// The pack's runtime files are held to the layer's brotli budget by budget.ts's budgetProblems.
 // Adapted from spike-html-packages-foundation (5dd8a58): test/unit/release.test.js, in TypeScript.
 
 import assert from "node:assert/strict";

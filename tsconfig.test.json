@@ -1,9 +1,7 @@
 // The type check of the suite, mise run types:test: the tests and their helpers, which node runs
-// under its type stripping, so tsconfig.json's erasable syntax alone, resolved as node resolves
-// them, and never emitted, with scripts/screenshots.config.ts, the capture description the
-// tooling's bin runs the same way. rootDir widens to the repository for test/ and scripts/.
-// allowJs reads the browser tier's in-page support/ module, which stays .js because the server
-// sends it as written.
+// under its type stripping, and scripts/screenshots.config.ts, which the tooling's bin runs the
+// same way, checked against dist/ as a consumer's code is and never emitted. allowJs reads the
+// browser tier's in-page support/ module, which stays .js because the server sends it as written.
 {
   "extends": "./tsconfig.json",
   "compilerOptions": {

@@ -1,4 +1,4 @@
-// The layer's import rules: eslint.config.js run over test/unit/layers-tree.js's tree, passing only
+// The layer's import rules: eslint.config.js run over test/unit/layers-tree.ts's tree, passing only
 // when ESLint flags exactly the files that break a rule, each with exactly the rules its case names.
 // Adapted from spike-html-packages-foundation (5dd8a58): test/unit/layers.test.js, in TypeScript.
 
