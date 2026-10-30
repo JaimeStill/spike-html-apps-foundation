@@ -187,7 +187,7 @@ function declare(): void {
  * retargeted to the outermost shadow host; the composed path's first entry is the field itself,
  * in an open shadow root at any depth.
  */
-const origin = (event: Event): EventTarget | null => event.composedPath()[0] ?? event.target;
+const origin = (event: Event): EventTarget => event.composedPath()[0];
 
 /** The focused element, followed down through each open shadow root's own focused element. */
 function focused(): Element | null {
