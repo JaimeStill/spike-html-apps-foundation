@@ -12,9 +12,12 @@ import { readFileSync } from "node:fs";
 import { join } from "node:path";
 import { after, before, describe, test } from "node:test";
 
-import { launch } from "./support/browser-pipe.js";
+import { launch } from "@jaimestill/spike-html-apps-tooling/browser.js";
+import { serve } from "@jaimestill/spike-html-apps-tooling/server.js";
 import { concerns, differences } from "./support/computed-styles.js";
-import { root, serve } from "./support/server.js";
+
+/** The repository root, which the server serves. */
+const root = join(import.meta.dirname, "../..");
 
 const reference = "/test/fixtures/v0.7.0/baseline.css";
 const entry = "/dist/page.css";
@@ -151,7 +154,7 @@ describe("foundation tools", () => {
   let upstream;
   const defaults = {};
   before(async () => {
-    server = await serve();
+    server = await serve({ root });
     browser = await launch();
     upstream = await snapshot(reference);
     for (const scheme of SCHEMES) defaults[scheme] = await scoped(reference, { scheme });

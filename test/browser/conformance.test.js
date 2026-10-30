@@ -6,10 +6,14 @@
 // Adapted from spike-html-design (fe75220): test/conformance.test.js.
 
 import assert from "node:assert/strict";
+import { join } from "node:path";
 import { after, afterEach, before, describe, test } from "node:test";
 
-import { launch } from "./support/browser-pipe.js";
-import { serve } from "./support/server.js";
+import { launch } from "@jaimestill/spike-html-apps-tooling/browser.js";
+import { serve } from "@jaimestill/spike-html-apps-tooling/server.js";
+
+/** The repository root, which the server serves. */
+const root = join(import.meta.dirname, "../..");
 
 const CONFORMANCE = "/dist/conformance.js";
 
@@ -57,9 +61,9 @@ const pages = [];
 const fixture = (name) => `${server.origin}/test/fixtures/${name}`;
 
 before(async () => {
-  server = await serve();
+  server = await serve({ root });
   // A second origin for the cross-origin case: the same tree on another port.
-  other = await serve();
+  other = await serve({ root });
   browser = await launch();
 });
 afterEach(async () => {

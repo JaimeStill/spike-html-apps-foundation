@@ -8,8 +8,11 @@ import { tmpdir } from "node:os";
 import { join } from "node:path";
 import { after, afterEach, before, describe, test } from "node:test";
 
-import { launch } from "./support/browser-pipe.js";
-import { root, serve } from "./support/server.js";
+import { launch } from "@jaimestill/spike-html-apps-tooling/browser.js";
+import { serve } from "@jaimestill/spike-html-apps-tooling/server.js";
+
+/** The repository root, which the server serves. */
+const root = join(import.meta.dirname, "../..");
 
 const KEYS = "/dist/keys.js";
 const STORE = 'globalThis[Symbol.for("spike-html-apps-foundation.keys")]';
@@ -22,7 +25,7 @@ const pages = [];
 const fixture = (name) => `${server.origin}/test/fixtures/${name}`;
 
 before(async () => {
-  server = await serve();
+  server = await serve({ root });
   browser = await launch();
 });
 // Every fixture shares one origin, and so the reader's stored settings.
@@ -849,7 +852,7 @@ describe("keys: the help dialog", () => {
         </body>
       </html>`,
     );
-    const copies = await serve(tree);
+    const copies = await serve({ root: tree });
     try {
       const page = await browser.open(`${copies.origin}/copies.html`);
       pages.push(page);

@@ -6,10 +6,14 @@
 // Adapted from spike-html-design (fe75220): test/preferences.test.js.
 
 import assert from "node:assert/strict";
+import { join } from "node:path";
 import { after, afterEach, before, describe, test } from "node:test";
 
-import { launch } from "./support/browser-pipe.js";
-import { serve } from "./support/server.js";
+import { launch } from "@jaimestill/spike-html-apps-tooling/browser.js";
+import { serve } from "@jaimestill/spike-html-apps-tooling/server.js";
+
+/** The repository root, which the server serves. */
+const root = join(import.meta.dirname, "../..");
 
 const KEY = "spike-html-apps-foundation.preferences";
 const PREFERENCES = "/dist/preferences.js";
@@ -37,7 +41,7 @@ const pages = [];
 const fixture = (name) => `${server.origin}/test/fixtures/${name}`;
 
 before(async () => {
-  server = await serve();
+  server = await serve({ root });
   browser = await launch();
 });
 // Every page shares one origin, and so the one stored choice.
