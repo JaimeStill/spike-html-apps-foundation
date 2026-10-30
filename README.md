@@ -89,10 +89,8 @@ and narrow, light and dark, on `page-full.css`. It runs the `spike-html-apps-scr
 [spike-html-apps-tooling](https://github.com/JaimeStill/spike-html-apps-tooling), the
 devDependency the browser tier's driver and server also come from, over the capture description
 in `scripts/screenshots.config.ts`, and passes its arguments on. With none it captures the default
-profile; `--palette`, `--space`, and `--type` name another, `--all` captures every color and
-compact and sans, and `--page` and `--scheme` narrow the run. `--output directory` or
-`--output browser`, a gallery, keeps the captures, in `--dir <path>` if given; the default,
-inline in kitty, removes them unless `--keep` is given. The check never runs it.
+profile, and `--all` captures every color and compact and sans; `mise run screenshots -- --help`
+lists the other flags, and the tooling's README documents them. The check never runs it.
 
 A push to main whose `package.json` version has no tag yet releases it: the check, then the pack
 committed and tagged, and a GitHub release from `CHANGELOG.md`.
