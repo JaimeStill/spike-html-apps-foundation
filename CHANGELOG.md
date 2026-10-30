@@ -6,6 +6,23 @@ follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), and the packag
 
 ## [Unreleased]
 
+## [0.2.1] - 2026-10-30
+
+### Fixed
+
+- The keys runtime tests the field a key was typed in, not the document's retargeted
+  `event.target`, so in a field inside an open shadow root at any depth (an input, textarea,
+  select, or contenteditable in a component, or in a component inside one) a single-key binding no
+  longer fires and swallows the character, and Escape outside a modal blurs that field as it does
+  in light DOM.
+
+### Changed
+
+- The keys runtime's input-method guard no longer reads the deprecated `keyCode`: it passes over
+  a press named `Process` or marked `isComposing`, and it tracks `compositionend`, so the Enter or
+  Escape WebKit sends after a composition ends, not composing, neither fires a binding nor blurs
+  the field. The first keydown within 100 ms of `compositionend` takes the mark.
+
 ## [0.2.0] - 2026-10-27
 
 ### Added
@@ -61,6 +78,7 @@ follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), and the packag
 - The release by tag: `v<version>`, whose tree is the pack, with the tarball on its GitHub
   release.
 
-[Unreleased]: https://github.com/JaimeStill/spike-html-apps-foundation/compare/v0.2.0...HEAD
+[Unreleased]: https://github.com/JaimeStill/spike-html-apps-foundation/compare/v0.2.1...HEAD
+[0.2.1]: https://github.com/JaimeStill/spike-html-apps-foundation/compare/v0.2.0...v0.2.1
 [0.2.0]: https://github.com/JaimeStill/spike-html-apps-foundation/compare/v0.1.0...v0.2.0
 [0.1.0]: https://github.com/JaimeStill/spike-html-apps-foundation/releases/tag/v0.1.0

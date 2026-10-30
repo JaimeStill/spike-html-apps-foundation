@@ -13,9 +13,9 @@ Each release is a tag, `v<version>`, whose tree is the package as `pnpm pack` bu
 `package.json`, this README, the LICENSE, and `dist/`. Install it by the tag:
 
 ```
-npm install --allow-git=root github:JaimeStill/spike-html-apps-foundation#v0.2.0
-pnpm add github:JaimeStill/spike-html-apps-foundation#v0.2.0
-bun add github:JaimeStill/spike-html-apps-foundation#v0.2.0
+npm install --allow-git=root github:JaimeStill/spike-html-apps-foundation#v0.2.1
+pnpm add github:JaimeStill/spike-html-apps-foundation#v0.2.1
+bun add github:JaimeStill/spike-html-apps-foundation#v0.2.1
 ```
 
 npm 12 refuses git dependencies unless `--allow-git` allows them; `root` allows the ones the

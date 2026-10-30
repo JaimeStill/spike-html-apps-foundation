@@ -182,6 +182,20 @@ function declare(): void {
   }
 }
 
+/**
+ * The element a key was pressed in. The listener sits on the document, where event.target is
+ * retargeted to the outermost shadow host; the composed path's first entry is the field itself,
+ * in an open shadow root at any depth.
+ */
+const origin = (event: Event): EventTarget => event.composedPath()[0];
+
+/** The focused element, followed down through each open shadow root's own focused element. */
+function focused(): Element | null {
+  let el = document.activeElement;
+  while (el?.shadowRoot?.activeElement) el = el.shadowRoot.activeElement;
+  return el;
+}
+
 /** Whether the target is a form field or editable, where a key types. */
 function isField(el: EventTarget | null): boolean {
   return (
@@ -247,9 +261,31 @@ const snapshot = ({ key, code, shiftKey, altKey, ctrlKey, metaKey }: KeyboardEve
   metaKey,
 });
 
-// keyCode 229 is a press an input method takes, where isComposing isn't yet set.
+/** How long after compositionend, in ms, the next keydown still belongs to the composition. */
+const SETTLE = 100;
+
+/** When the last composition ended, by performance.now(), until a keydown takes it; else null. */
+let ended: number | null = null;
+
+/** Marks a composition's end, for the keydown WebKit sends after it. */
+function oncompositionend(): void {
+  ended = performance.now();
+}
+
+/**
+ * Whether the press is the composition's own: WebKit sends the Enter or Escape that commits or
+ * cancels one after compositionend, with isComposing false. The first keydown takes the mark, so
+ * it belongs to the composition only within SETTLE, and Chrome, which sends none, loses nothing.
+ */
+function settling(): boolean {
+  const at = ended;
+  ended = null;
+  return at !== null && performance.now() - at < SETTLE;
+}
+
+/** Whether the press is passed over: handled, repeated, or an input method's. */
 const passed = (event: KeyboardEvent): boolean =>
-  event.defaultPrevented || event.repeat || event.isComposing || event.keyCode === 229;
+  event.defaultPrevented || event.repeat || event.isComposing;
 
 /** Whether the press is one keys never matches. */
 const silent = (event: KeyboardEvent): boolean =>
@@ -258,12 +294,12 @@ const silent = (event: KeyboardEvent): boolean =>
   event.key === "Process" ||
   MODIFIER_KEYS.has(event.key) ||
   event.getModifierState?.("AltGraph") ||
-  isField(event.target);
+  isField(origin(event));
 
 /** Blurs the field an Escape was pressed in, outside any modal, and reports whether it did. */
 function release(event: KeyboardEvent): boolean {
-  const field = document.activeElement;
-  if (event.key !== "Escape" || passed(event) || field !== event.target) return false;
+  const field = focused();
+  if (event.key !== "Escape" || passed(event) || field !== origin(event)) return false;
   if (!isField(field) || document.querySelector(":modal")) return false;
   (field as HTMLElement).blur();
   return true;
@@ -364,7 +400,7 @@ function onbeforetoggle(event: ToggleEvent): void {
 
 /** Matches a press, after those pending, and fires, waits for a longer binding, or drops. */
 function onkey(event: KeyboardEvent): void {
-  if (release(event) || silent(event)) return;
+  if (settling() || release(event) || silent(event)) return;
   const presses = [...(pending?.presses ?? []), snapshot(event)];
   const n = presses.length;
   const current = settings();
@@ -435,6 +471,9 @@ function observe(): void {
 if (!store.listening) {
   store.listening = true;
   document.addEventListener("keydown", onkey);
+  // compositionend is composed, so the document sees it from a field in a shadow root; captured,
+  // so a listener that stops it doesn't hide it.
+  document.addEventListener("compositionend", oncompositionend, true);
   // beforetoggle doesn't bubble.
   document.addEventListener("beforetoggle", onbeforetoggle, true);
   observe();
