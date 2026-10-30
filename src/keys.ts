@@ -182,6 +182,20 @@ function declare(): void {
   }
 }
 
+/**
+ * The element a key was pressed in. The listener sits on the document, where event.target is
+ * retargeted to the outermost shadow host; the composed path's first entry is the field itself,
+ * in an open shadow root at any depth.
+ */
+const origin = (event: Event): EventTarget | null => event.composedPath()[0] ?? event.target;
+
+/** The focused element, followed down through each open shadow root's own focused element. */
+function focused(): Element | null {
+  let el = document.activeElement;
+  while (el?.shadowRoot?.activeElement) el = el.shadowRoot.activeElement;
+  return el;
+}
+
 /** Whether the target is a form field or editable, where a key types. */
 function isField(el: EventTarget | null): boolean {
   return (
@@ -258,12 +272,12 @@ const silent = (event: KeyboardEvent): boolean =>
   event.key === "Process" ||
   MODIFIER_KEYS.has(event.key) ||
   event.getModifierState?.("AltGraph") ||
-  isField(event.target);
+  isField(origin(event));
 
 /** Blurs the field an Escape was pressed in, outside any modal, and reports whether it did. */
 function release(event: KeyboardEvent): boolean {
-  const field = document.activeElement;
-  if (event.key !== "Escape" || passed(event) || field !== event.target) return false;
+  const field = focused();
+  if (event.key !== "Escape" || passed(event) || field !== origin(event)) return false;
   if (!isField(field) || document.querySelector(":modal")) return false;
   (field as HTMLElement).blur();
   return true;

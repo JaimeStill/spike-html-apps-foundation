@@ -6,6 +6,14 @@ follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), and the packag
 
 ## [Unreleased]
 
+### Fixed
+
+- The keys runtime tests the field a key was typed in, not the document's retargeted
+  `event.target`, so in a field inside an open shadow root at any depth (an input, textarea,
+  select, or contenteditable in a component, or in a component inside one) a single-key binding no
+  longer fires and swallows the character, and Escape outside a modal blurs that field as it does
+  in light DOM.
+
 ## [0.2.0] - 2026-10-27
 
 ### Added

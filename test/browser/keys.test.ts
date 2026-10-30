@@ -459,6 +459,70 @@ describe("keys: Escape releases a field", () => {
   });
 });
 
+// Each field of keys-shadow.html, as the path through open shadow roots to it: one root deep in
+// x-fields, and two in x-panel's own x-fields.
+const SHADOW_FIELDS = ["input", "textarea", "editable"].flatMap((id) => [
+  ["fields", id],
+  ["panel", "inner", id],
+]);
+
+/** The expression for the element at the path: a document id, then an id in each shadow root. */
+const deep = ([host, ...rest]: string[]) =>
+  rest.reduce(
+    (expression, id) => `${expression}.shadowRoot.getElementById(${JSON.stringify(id)})`,
+    `document.getElementById(${JSON.stringify(host)})`,
+  );
+
+/** The text the field at the path holds: its value, or a contenteditable's text. */
+const typed = (page: Page, path: string[]) =>
+  page.evaluate(`(() => { const el = ${deep(path)}; return el.value ?? el.textContent; })()`);
+
+/** Whether the field at the path is focused, as the page follows focus through shadow roots. */
+const isFocused = (page: Page, path: string[]) =>
+  page.evaluate(`(() => {
+    let el = document.activeElement;
+    while (el?.shadowRoot?.activeElement) el = el.shadowRoot.activeElement;
+    return el === ${deep(path)};
+  })()`);
+
+describe("keys: fields in open shadow roots", () => {
+  test("a key typed in a field one or two shadow roots deep types and binds nothing", async () => {
+    const page = await open("keys-shadow.html");
+    await registerLogged(page, "/");
+    for (const path of SHADOW_FIELDS) {
+      await page.evaluate(`${deep(path)}.focus()`);
+      await press(page, "t");
+      await press(page, "/");
+      assert.equal(await typed(page, path), "t/", path.join(" > "));
+    }
+    assert.deepEqual(await log(page), []);
+    assert.deepEqual(await fired(page), []);
+  });
+
+  test("with focus outside any field, the bindings still fire", async () => {
+    const page = await open("keys-shadow.html");
+    await registerLogged(page, "/");
+    await page.evaluate(`${deep(["panel", "inner", "input"])}.focus()`);
+    await page.evaluate(`${deep(["panel", "inner", "input"])}.blur()`);
+    await press(page, "t");
+    await press(page, "/");
+    assert.deepEqual(await log(page), ["t", "/"]);
+  });
+
+  test("Escape blurs a field two shadow roots deep, and t fires again", async () => {
+    const page = await open("keys-shadow.html");
+    for (const path of SHADOW_FIELDS.filter((path) => path[0] === "panel")) {
+      await page.evaluate(`${deep(path)}.focus()`);
+      assert.equal(await isFocused(page, path), true);
+      await pressEscape(page);
+      assert.equal(await isFocused(page, path), false, path.join(" > "));
+      assert.equal(await active(page), "body");
+      await press(page, "t");
+    }
+    assert.deepEqual(await log(page), ["t", "t", "t"]);
+  });
+});
+
 describe("keys: extension and the store", () => {
   test("cancelling keys-fire stops the action", async () => {
     const page = await open();
