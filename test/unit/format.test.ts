@@ -4,6 +4,7 @@
 import assert from "node:assert/strict";
 import { describe, test } from "node:test";
 
+import type { RelativeOptions } from "@jaimestill/spike-html-apps-foundation/format.js";
 import {
   formatBytes,
   formatDate,
@@ -44,14 +45,15 @@ describe("formatBytes", () => {
         maximumFractionDigits: 1,
       }),
   );
-  const entrySize = (bytes) => {
+  const entrySize = (bytes: number) => {
     const step = Math.min(Math.floor(Math.log10(Math.max(bytes, 1)) / 3), entryUnits.length - 1);
     return entryUnits[step].format(bytes / 1000 ** step);
   };
 
   test("its defaults print what an independent one-fraction-digit formatter prints", () => {
     const counts = [0, 1, 999, 1000, 1049, 1050, 12_345, 999_949, 999_950, 1e6, 123_456_789, 4.2e9];
-    for (const bytes of counts) assert.equal(formatBytes(bytes, LOCALE), entrySize(bytes), bytes);
+    for (const bytes of counts)
+      assert.equal(formatBytes(bytes, LOCALE), entrySize(bytes), String(bytes));
   });
 
   test("passes the caller's other NumberFormat options through", () => {
@@ -61,7 +63,9 @@ describe("formatBytes", () => {
   });
 
   test("keeps its own style and unit over a caller's", () => {
-    assert.equal(formatBytes(1500, LOCALE, { style: "percent", unit: "meter" }), "1.5 kB");
+    // BytesOptions omits both, so it's a caller holding a whole NumberFormatOptions that passes them.
+    const theirs: Intl.NumberFormatOptions = { style: "percent", unit: "meter" };
+    assert.equal(formatBytes(1500, LOCALE, theirs), "1.5 kB");
   });
 });
 
@@ -110,7 +114,7 @@ const DAY = 86_400 * SECOND;
 
 describe("formatRelative", () => {
   /** `offset` milliseconds from a fixed now, formatted relative to it. */
-  const relative = (offset, options = {}) =>
+  const relative = (offset: number, options: RelativeOptions = {}) =>
     formatRelative(moment + offset, LOCALE, { now: moment, ...options });
 
   test("seconds up to a minute, then the largest whole unit", () => {

@@ -3,7 +3,7 @@
 // <sl-theme-menu>, pressed with real keys through the DevTools Protocol, on
 // test/fixtures/preferences*.html and test/fixtures/flash-*.html, and demo/theme.html and
 // demo/unit.html; and a unit, built-in or from outside the package, joining a lean page.
-// Adapted from spike-html-design (fe75220): test/preferences.test.js.
+// Adapted from spike-html-design (fe75220): test/preferences.test.js, in TypeScript.
 
 import assert from "node:assert/strict";
 import { join } from "node:path";
@@ -11,6 +11,8 @@ import { after, afterEach, before, describe, test } from "node:test";
 
 import { launch, until } from "@jaimestill/spike-html-apps-tooling/browser.js";
 import { serve } from "@jaimestill/spike-html-apps-tooling/server.js";
+import type { Browser, Page } from "@jaimestill/spike-html-apps-tooling/browser.js";
+import type { Server } from "@jaimestill/spike-html-apps-tooling/server.js";
 
 /** The repository root, which the server serves. */
 const root = join(import.meta.dirname, "../..");
@@ -35,10 +37,10 @@ const DEFAULT_STATE = {
   "data-scheme": null,
 };
 
-let server;
-let browser;
-const pages = [];
-const fixture = (name) => `${server.origin}/test/fixtures/${name}`;
+let server: Server;
+let browser: Browser;
+const pages: Page[] = [];
+const fixture = (name: string) => `${server.origin}/test/fixtures/${name}`;
 
 before(async () => {
   server = await serve({ root });
@@ -57,7 +59,7 @@ after(async () => {
 });
 
 /** Opens the URL, closing it after the test. */
-async function open(url) {
+async function open(url: string): Promise<Page> {
   const page = await browser.open(url);
   pages.push(page);
   return page;
@@ -67,7 +69,7 @@ async function open(url) {
  * Stores the value under KEY, as JSON unless it is a string, or clears it when null, from a page
  * of the origin, which it returns: a fixture loaded next finds the value in storage.
  */
-async function seed(value) {
+async function seed(value: unknown): Promise<Page> {
   const page = await open(fixture("preferences.html"));
   await page.evaluate(
     value === null
@@ -80,29 +82,38 @@ async function seed(value) {
 }
 
 /** The page's stored choice, parsed. */
-const stored = (page) => page.evaluate(`JSON.parse(localStorage.getItem(${JSON.stringify(KEY)}))`);
+const stored = (page: Page) =>
+  page.evaluate(`JSON.parse(localStorage.getItem(${JSON.stringify(KEY)}))`);
 
 /** The root's four preference attributes, null where one is absent. */
-const rooted = (page) =>
+const rooted = (page: Page) =>
   page.evaluate(`Object.fromEntries(["data-palette", "data-space", "data-type", "data-scheme"]
     .map((name) => [name, document.documentElement.getAttribute(name)]))`);
 
 /** Resolves after ms, as measured in the page. */
-const sleep = (page, ms) => page.evaluate(`new Promise((resolve) => setTimeout(resolve, ${ms}))`);
+const sleep = (page: Page, ms: number) =>
+  page.evaluate(`new Promise((resolve) => setTimeout(resolve, ${ms}))`);
 
 /** Evaluates the body with the page's preferences module, the one it loaded, bound. */
-const call = (page, body) =>
+const call = (page: Page, body: string) =>
   page.evaluate(`import(${JSON.stringify(PREFERENCES)}).then((preferences) => ${body})`);
 
 /** When the page fetched the file of dist/, in ms since navigation, or null. */
-const fetched = (page, name) =>
+const fetched = (page: Page, name: string) =>
   page.evaluate(`performance.getEntriesByType("resource")
     .find(({ name }) => name.endsWith("/dist/${name}"))?.startTime ?? null`);
 
 /** Sends a real key press, keyDown then keyUp, with a US layout's code for a letter. */
-async function press(page, key, { repeat = false } = {}) {
+async function press(page: Page, key: string, { repeat = false } = {}) {
   const letter = /^[a-z]$/i.test(key);
-  const codes = { Escape: 27, Tab: 9, ArrowLeft: 37, ArrowUp: 38, ArrowRight: 39, ArrowDown: 40 };
+  const codes: Record<string, number> = {
+    Escape: 27,
+    Tab: 9,
+    ArrowLeft: 37,
+    ArrowUp: 38,
+    ArrowRight: 39,
+    ArrowDown: 40,
+  };
   const event = {
     key,
     code: letter ? `Key${key.toUpperCase()}` : key,
@@ -115,13 +126,13 @@ async function press(page, key, { repeat = false } = {}) {
 }
 
 /** Clicks the page's Theme button and resolves once its menu is open. */
-async function clickTheme(page) {
+async function clickTheme(page: Page) {
   await page.evaluate(`document.querySelector(${JSON.stringify(MENU)}).click()`);
   await until(page, `document.querySelector(${JSON.stringify(DIALOG)})?.open`);
 }
 
 /** Loads the fixture with the value stored (see seed) and opens its menu. */
-async function openMenu(value = null, name = "preferences.html") {
+async function openMenu(value: unknown = null, name = "preferences.html") {
   await seed(value);
   const page = await open(fixture(name));
   await clickTheme(page);
@@ -129,14 +140,14 @@ async function openMenu(value = null, name = "preferences.html") {
 }
 
 /** Resolves once the page's menu has closed. */
-const closed = (page) =>
+const closed = (page: Page) =>
   until(page, `!document.querySelector("sl-theme-menu").hasAttribute("data-open")`);
 
 /**
  * The open menu's focus, as [section, value] of the focused radio, its selection per section, and
  * the root's and the preview's four preference attributes.
  */
-const state = (page) =>
+const state = (page: Page) =>
   page.evaluate(`(() => {
     const dialog = document.querySelector(${JSON.stringify(DIALOG)});
     const names = ["data-palette", "data-space", "data-type", "data-scheme"];
@@ -152,7 +163,7 @@ const state = (page) =>
   })()`);
 
 /** Counts localStorage.setItem's calls into window.writes. */
-const countWrites = (page) =>
+const countWrites = (page: Page) =>
   page.evaluate(`(() => {
     window.writes = 0;
     const setItem = Storage.prototype.setItem;
@@ -160,7 +171,7 @@ const countWrites = (page) =>
   })()`);
 
 /** The computed value of the property on the first element the selector matches. */
-const style = (page, selector, property) =>
+const style = (page: Page, selector: string, property: string) =>
   page.evaluate(
     `getComputedStyle(document.querySelector(${JSON.stringify(selector)})).getPropertyValue(${JSON.stringify(property)})`,
   );
@@ -282,9 +293,9 @@ describe("preferences: the flash", () => {
   const DELAY = 200;
 
   /** Loads the flash fixture with CHOICE stored and every dist/ module's fetch held DELAY ms. */
-  async function flash(name) {
+  async function flash(name: string) {
     const page = await seed(CHOICE);
-    page.on("Fetch.requestPaused", ({ requestId }) => {
+    page.on("Fetch.requestPaused", ({ requestId }: { requestId: string }) => {
       setTimeout(() => page.cdp("Fetch.continueRequest", { requestId }).catch(() => {}), DELAY);
     });
     await page.cdp("Fetch.enable", { patterns: [{ urlPattern: "*/dist/*.js" }] });
@@ -413,7 +424,7 @@ describe("preferences: <sl-theme-menu>", () => {
     await seed(null);
     const page = await open(fixture("preferences.html"));
     let requests = 0;
-    page.on("Fetch.requestPaused", ({ requestId }) => {
+    page.on("Fetch.requestPaused", ({ requestId }: { requestId: string }) => {
       requests++;
       page.cdp("Fetch.fulfillRequest", { requestId, responseCode: 404 });
     });
@@ -466,7 +477,7 @@ describe("preferences: the menu", () => {
     })()`);
     assert.equal(menu.modal, true);
     assert.equal(menu.shadow, null);
-    const row = (section, legend, names) => ({
+    const row = (section: string, legend: string, names: string[]) => ({
       section,
       legend,
       names,
@@ -752,7 +763,7 @@ describe("preferences: the menu", () => {
       return { beside: preview.left >= rows.right, below: preview.top >= rows.bottom };
     })()`;
     const page = await openMenu();
-    const at = async (width) => {
+    const at = async (width: number) => {
       await page.cdp("Emulation.setDeviceMetricsOverride", {
         width,
         height: 900,
@@ -774,13 +785,13 @@ describe("preferences: the menu", () => {
 // the menu lists it, and the attribute and a stored choice apply it.
 describe("preferences: units and extensions", () => {
   /** The menu's names per section, on a page whose menu is open. */
-  const listed = (page) =>
+  const listed = (page: Page) =>
     page.evaluate(`Object.fromEntries([...document.querySelectorAll(
       "sl-theme-menu fieldset")].map((row) => [row.dataset.section,
       [...row.querySelectorAll("input")].map((radio) => radio.value)]))`);
 
   /** The root's --bg, its whitespace collapsed. */
-  const background = (page) =>
+  const background = (page: Page) =>
     page.evaluate(`getComputedStyle(document.documentElement).getPropertyValue("--bg")
       .trim().replace(/\\s+/g, " ")`);
 

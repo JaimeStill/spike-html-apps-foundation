@@ -1,6 +1,6 @@
 // The keys runtime and its help dialog from the package's dist/, pressed with real keys
 // through the DevTools Protocol on test/fixtures/keys*.html.
-// Adapted from spike-html-packages-foundation (5dd8a58): test/browser/keys.test.js.
+// Adapted from spike-html-packages-foundation (5dd8a58): test/browser/keys.test.js, in TypeScript.
 
 import assert from "node:assert/strict";
 import { mkdtemp, rm, symlink, writeFile } from "node:fs/promises";
@@ -10,6 +10,9 @@ import { after, afterEach, before, describe, test } from "node:test";
 
 import { launch, until } from "@jaimestill/spike-html-apps-tooling/browser.js";
 import { serve } from "@jaimestill/spike-html-apps-tooling/server.js";
+import type { Browser, Page } from "@jaimestill/spike-html-apps-tooling/browser.js";
+import type { Server } from "@jaimestill/spike-html-apps-tooling/server.js";
+import type { FireDetail } from "@jaimestill/spike-html-apps-foundation/keys.js";
 
 /** The repository root, which the server serves. */
 const root = join(import.meta.dirname, "../..");
@@ -19,10 +22,10 @@ const STORE = 'globalThis[Symbol.for("spike-html-apps-foundation.keys")]';
 // The sequence wait the tests set, short so a test waits it out quickly.
 const WAIT = 150;
 
-let server;
-let browser;
-const pages = [];
-const fixture = (name) => `${server.origin}/test/fixtures/${name}`;
+let server: Server;
+let browser: Browser;
+const pages: Page[] = [];
+const fixture = (name: string) => `${server.origin}/test/fixtures/${name}`;
 
 before(async () => {
   server = await serve({ root });
@@ -41,7 +44,7 @@ after(async () => {
 });
 
 /** Opens a fixture with the wait set to WAIT, recording keys-fire and keys-sequence details. */
-async function open(name = "keys.html") {
+async function open(name = "keys.html"): Promise<Page> {
   const page = await browser.open(fixture(name));
   pages.push(page);
   await page.evaluate(`(() => {
@@ -55,13 +58,29 @@ async function open(name = "keys.html") {
   return page;
 }
 
-const MODIFIERS = { alt: 1, ctrl: 2, meta: 4, shift: 8 };
+const MODIFIERS: Record<string, number> = { alt: 1, ctrl: 2, meta: 4, shift: 8 };
+
+/** A press's code and keyCode where its key's default isn't the one, whether it repeats, and the
+ * modifiers held. */
+interface PressInit {
+  code?: string;
+  repeat?: boolean;
+  keyCode?: number;
+  alt?: boolean;
+  ctrl?: boolean;
+  meta?: boolean;
+  shift?: boolean;
+}
 
 /**
  * Sends a real key press: keyDown then keyUp, with a US layout's code for a letter or digit
  * unless given, and the text a character types when no Control or Meta is held.
  */
-async function press(page, key, { code, repeat = false, keyCode, ...held } = {}) {
+async function press(
+  page: Page,
+  key: string,
+  { code, repeat = false, keyCode, ...held }: PressInit = {},
+) {
   const modifiers = Object.entries(held).reduce(
     (bits, [name, on]) => bits | (on ? MODIFIERS[name] : 0),
     0,
@@ -80,50 +99,53 @@ async function press(page, key, { code, repeat = false, keyCode, ...held } = {})
 }
 
 /** Presses Escape as a keyboard sends it. */
-const pressEscape = (page, init) => press(page, "Escape", { code: "Escape", keyCode: 27, ...init });
+const pressEscape = (page: Page, init?: PressInit) =>
+  press(page, "Escape", { code: "Escape", keyCode: 27, ...init });
 
 /** Presses ?, Shift and the slash key. */
-const pressHelp = (page) => press(page, "?", { code: "Slash", shift: true });
+const pressHelp = (page: Page) => press(page, "?", { code: "Slash", shift: true });
 
 /** The actions the fixture's bindings ran, in order. */
-const log = (page) => page.evaluate("window.log");
+const log = (page: Page) => page.evaluate("window.log");
 
 /** The keys-fire details, in order. */
-const fired = (page) => page.evaluate("window.fired");
+const fired = (page: Page): Promise<FireDetail[]> => page.evaluate("window.fired");
 
 /** Resolves after ms, as measured in the page. */
-const sleep = (page, ms) => page.evaluate(`new Promise((resolve) => setTimeout(resolve, ${ms}))`);
+const sleep = (page: Page, ms: number) =>
+  page.evaluate(`new Promise((resolve) => setTimeout(resolve, ${ms}))`);
 
 /** Evaluates the expression with the page's keys module bound as `keys`. */
-const call = (page, body) =>
+const call = (page: Page, body: string) =>
   page.evaluate(`import(${JSON.stringify(KEYS)}).then((keys) => ${body})`);
 
 /** Registers a binding, labelled by its keys, whose handler logs its keys. */
-const registerLogged = (page, binding) => {
+const registerLogged = (page: Page, binding: string) => {
   const keys = JSON.stringify(binding);
   return call(page, `keys.register(${keys}, ${keys}, () => window.log.push(${keys}))`);
 };
 
 /** The [name, message] of the error the keys call throws, or null. */
-const thrown = (page, body) =>
+const thrown = (page: Page, body: string) =>
   call(
     page,
     `{ try { ${body}; return null; } catch (e) { return [e.constructor.name, e.message]; } }`,
   );
 
 /** Focuses the element with the id. */
-const focus = (page, id) => page.evaluate(`document.getElementById(${JSON.stringify(id)}).focus()`);
+const focus = (page: Page, id: string) =>
+  page.evaluate(`document.getElementById(${JSON.stringify(id)}).focus()`);
 
 /** The focused element's id, or its tag when it has none. */
-const active = (page) =>
+const active = (page: Page) =>
   page.evaluate("document.activeElement.id || document.activeElement.localName");
 
 /** Whether the dialog with the id is open. */
-const isOpen = (page, id = "help") =>
+const isOpen = (page: Page, id = "help") =>
   page.evaluate(`document.getElementById(${JSON.stringify(id)}).open`);
 
 /** Whether the dialog with the id is modal. */
-const isModal = (page, id = "help") =>
+const isModal = (page: Page, id = "help") =>
   page.evaluate(`document.getElementById(${JSON.stringify(id)}).matches(":modal")`);
 
 describe("keys: element bindings", () => {
@@ -496,12 +518,12 @@ const DECLARED = {
 const OFF = { ...DECLARED, t: null, "?": null };
 
 /** Each bound button's aria-keyshortcuts, by its data-log. */
-const declared = (page) =>
+const declared = (page: Page) =>
   page.evaluate(`Object.fromEntries([...document.querySelectorAll("[data-log]")]
     .map((el) => [el.dataset.log, el.getAttribute("aria-keyshortcuts")]))`);
 
 /** Writes the reader's settings as another tab would, and sends the storage event it sends. */
-const store = (page, value) => {
+const store = (page: Page, value: unknown) => {
   const json = JSON.stringify(typeof value === "string" ? value : JSON.stringify(value));
   return page.evaluate(`(() => {
     const oldValue = localStorage.getItem("spike-html-apps-foundation.keys");
@@ -512,11 +534,11 @@ const store = (page, value) => {
 };
 
 /** The reader's stored settings, or null. */
-const saved = (page) =>
+const saved = (page: Page) =>
   page.evaluate(`JSON.parse(localStorage.getItem("spike-html-apps-foundation.keys"))`);
 
 /** Presses each of the settings fixture's bindings as written. */
-async function pressAll(page) {
+async function pressAll(page: Page) {
   await press(page, "t");
   await pressHelp(page);
   await press(page, "g");
@@ -657,7 +679,7 @@ describe("keys: aria-keyshortcuts", () => {
 
   test("follows added elements and data-keys changes, and leaves unbound elements alone", async () => {
     const page = await open(SETTINGS);
-    const shortcut = async (keys) => {
+    const shortcut = async (keys: string | null) => {
       await page.evaluate(
         keys === null
           ? `document.getElementById("added").removeAttribute("data-keys")`
@@ -703,35 +725,35 @@ describe("keys: the help dialog", () => {
   ];
 
   /** Whether the page has fetched the help module. */
-  const fetchedHelp = (page) =>
+  const fetchedHelp = (page: Page) =>
     page.evaluate(
       `performance.getEntriesByType("resource").some(({ name }) => name.endsWith("/keys-help.js"))`,
     );
 
   /** Resolves once the help dialog is open and filled. */
-  const filled = (page) =>
+  const filled = (page: Page) =>
     until(
       page,
       `document.getElementById("help").open && !!document.querySelector("#help [data-keys-list] [data-keys-table]")`,
     );
 
   /** Opens the dialog from its Help button, a show-modal invoker. */
-  const clickHelp = (page) =>
+  const clickHelp = (page: Page) =>
     page.evaluate(`document.querySelector("button[command=show-modal]").click()`);
 
   /** Opens the dialog from its Help button and waits for it to fill. */
-  async function openHelp(page) {
+  async function openHelp(page: Page) {
     await clickHelp(page);
     await filled(page);
   }
 
-  const closeHelp = (page) => page.evaluate(`document.getElementById("help").close()`);
+  const closeHelp = (page: Page) => page.evaluate(`document.getElementById("help").close()`);
 
   /**
    * The table's rows as [keys, action]: each kbd drawn as [name], an off row's keys ending " off",
    * and the action the row button's text, or the fixed Escape row's cell text.
    */
-  const rows = (page) =>
+  const rows = (page: Page): Promise<[string, string][]> =>
     page.evaluate(`[...document.querySelectorAll("#help [data-keys-table] tbody tr")].map((row) => {
       const [keys, action] = row.cells;
       const drawn = [...keys.childNodes].map((node) =>
@@ -740,12 +762,12 @@ describe("keys: the help dialog", () => {
     })`);
 
   /** Clicks the row button whose text is the action. */
-  const clickRow = (page, action) =>
+  const clickRow = (page: Page, action: string) =>
     page.evaluate(`[...document.querySelectorAll("#help [data-keys-table] button")]
       .find((button) => button.textContent === ${JSON.stringify(action)}).click()`);
 
   /** Sets one of the dialog's settings controls as the reader would. */
-  const choose = (page, name, value) =>
+  const choose = (page: Page, name: string, value: unknown) =>
     page.evaluate(`(() => {
       const control = document.querySelector("#help [data-keys-settings] [name=${name}]");
       if (control.type === "checkbox") control.checked = ${JSON.stringify(value)};
@@ -754,7 +776,7 @@ describe("keys: the help dialog", () => {
     })()`);
 
   /** Registers j, and a second f the first element's f shadows. */
-  const registerJ = (page) =>
+  const registerJ = (page: Page) =>
     call(
       page,
       `(keys.register("j", "Next section", (event) => window.log.push("j " + JSON.stringify(event.detail))),
@@ -762,9 +784,9 @@ describe("keys: the help dialog", () => {
     );
 
   /** Answers every request for the help module with a 404, resolving to a count of them. */
-  async function refuseHelp(page) {
+  async function refuseHelp(page: Page) {
     let requests = 0;
-    page.on("Fetch.requestPaused", ({ requestId }) => {
+    page.on("Fetch.requestPaused", ({ requestId }: { requestId: string }) => {
       requests++;
       page.cdp("Fetch.fulfillRequest", { requestId, responseCode: 404 });
     });

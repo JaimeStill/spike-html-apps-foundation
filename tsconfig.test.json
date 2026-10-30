@@ -1,0 +1,16 @@
+// The type check of the suite, mise run types:test: the tests and their helpers, which node runs
+// under its type stripping, so tsconfig.json's erasable syntax alone, resolved as node resolves
+// them, and never emitted. rootDir widens to the repository for test/. allowJs reads the browser
+// tier's in-page support/ module, which stays .js because the server sends it as written.
+{
+  "extends": "./tsconfig.json",
+  "compilerOptions": {
+    "module": "nodenext",
+    "moduleResolution": "nodenext",
+    "types": ["node"],
+    "noEmit": true,
+    "allowJs": true,
+    "rootDir": "."
+  },
+  "include": ["test/**/*.ts"]
+}

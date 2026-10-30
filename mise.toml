@@ -50,8 +50,18 @@ description = "Lint the GitHub Actions workflows with actionlint"
 run = "actionlint"
 
 [tasks.types]
+description = "Type-check the sources and the suite with tsc"
+depends = ["types:src", "types:test"]
+
+[tasks."types:src"]
 description = "Type-check the sources with tsc"
 run = "tsc --noEmit -p ."
+
+# The suite imports the package's own exports, which resolve to dist/'s declarations.
+[tasks."types:test"]
+description = "Type-check the suite with tsc, under tsconfig.test.json"
+depends = ["build"]
+run = "tsc -p tsconfig.test.json"
 
 [tasks.build]
 description = "Build src/ into dist/: tsc's emit, with the .css and handwritten .d.ts beside it"
@@ -60,12 +70,12 @@ run = "scripts/build.sh"
 [tasks."test:unit"]
 description = "Run the unit tier on the sources, the lint, and a pack of the build"
 depends = ["preflight", "build"]
-run = "node --test 'test/unit/*.test.js'"
+run = "node --test 'test/unit/*.test.ts'"
 
 [tasks."test:browser"]
 description = "Run the browser tier on dist/ in the pinned chrome-headless-shell"
 depends = ["preflight browser", "build"]
-run = "BROWSER_EXECUTABLE=$(mise which chrome-headless-shell) node --test 'test/browser/*.test.js'"
+run = "BROWSER_EXECUTABLE=$(mise which chrome-headless-shell) node --test 'test/browser/*.test.ts'"
 
 [tasks.check]
 description = "Run every check; reads no network; writes dist/"

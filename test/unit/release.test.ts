@@ -2,7 +2,7 @@
 // exports and against its license, by release.js's releaseProblems, as it stands and in scratch
 // copies with one fault each. It packs the dist/ that mise run build writes.
 // The pack's runtime files are held to the layer's brotli budget by budget.js's budgetProblems.
-// Adapted from spike-html-packages-foundation (5dd8a58): test/unit/release.test.js.
+// Adapted from spike-html-packages-foundation (5dd8a58): test/unit/release.test.js, in TypeScript.
 
 import assert from "node:assert/strict";
 import { execFileSync } from "node:child_process";
@@ -10,12 +10,13 @@ import { cpSync, mkdtempSync, readFileSync, rmSync, writeFileSync } from "node:f
 import { tmpdir } from "node:os";
 import { join } from "node:path";
 import { after, before, describe, test } from "node:test";
-import { brotliBytes, budgetProblems, runtimeFiles } from "./budget.js";
-import { listFiles, releaseProblems } from "./release.js";
+import { brotliBytes, budgetProblems, runtimeFiles } from "./budget.ts";
+import { listFiles, releaseProblems } from "./release.ts";
+import type { Manifest } from "./release.ts";
 
 const root = join(import.meta.dirname, "../..");
 const src = join(root, "src");
-const scratches = [];
+const scratches: string[] = [];
 
 // The layer's budget in brotli bytes, a KB being 1,000 bytes: its baseline on 2026-10-29, 43,595 B
 // over 39 runtime files, plus 10%, rounded up to a whole KB. A layer over it fails the check;
@@ -31,7 +32,7 @@ function scratchDir() {
 }
 
 // The pack under test: pnpm pack's tarball, extracted, its package/ directory.
-let pack;
+let pack: string;
 before(() => {
   const scratch = scratchDir();
   execFileSync("pnpm", ["pack", "--pack-destination", scratch], { cwd: root, stdio: "ignore" });
@@ -43,17 +44,21 @@ after(() => {
   for (const scratch of scratches) rmSync(scratch, { recursive: true, force: true });
 });
 
+/** A fault: a change to a pack's copy, given its directory and its manifest, every field of which
+ * the pack declares. */
+type Change = (dir: string, manifest: Required<Manifest>) => void;
+
 /** A scratch copy of the pack, `change` applied to it and its manifest, and its problems. */
-function faulted(change) {
+function faulted(change: Change) {
   const copy = join(scratchDir(), "package");
   cpSync(pack, copy, { recursive: true });
-  const manifest = JSON.parse(readFileSync(join(copy, "package.json"), "utf8"));
+  const manifest: Required<Manifest> = JSON.parse(readFileSync(join(copy, "package.json"), "utf8"));
   change(copy, manifest);
   writeFileSync(join(copy, "package.json"), JSON.stringify(manifest));
   return releaseProblems(copy, src);
 }
 
-const remove = (path) => (dir) => rmSync(join(dir, path));
+const remove = (path: string) => (dir: string) => rmSync(join(dir, path));
 
 describe("release pack", () => {
   test("the pack is package.json, README.md, LICENSE, and the build", () => {
@@ -66,7 +71,7 @@ describe("release pack", () => {
     assert.deepEqual(releaseProblems(pack, src), []);
   });
 
-  const faults = {
+  const faults: Record<string, [Change, string]> = {
     "a source .css with no built copy": [
       remove("dist/meta.css"),
       "src/meta.css has no built dist/meta.css",

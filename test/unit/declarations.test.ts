@@ -1,6 +1,6 @@
 // The formatters' emitted declaration against v0.1.0's handwritten one, both printed by tsc, and
 // tsc, under tsconfig.json, refusing runtime code in a declaration file, run against scratch trees.
-// Adapted from spike-html-packages-foundation (5dd8a58): test/unit/declarations.test.js.
+// Adapted from spike-html-packages-foundation (5dd8a58): test/unit/declarations.test.js, in TypeScript.
 
 import assert from "node:assert/strict";
 import { spawnSync } from "node:child_process";
@@ -16,7 +16,7 @@ const tsc = "tsc";
 /** v0.1.0's handwritten format.d.ts as tsc's declaration printer writes it: the file compiled as
  * a .ts source in scratch, under tsconfig.json, its declaration emitted, so the comparison with the
  * build's emit is one printer's against the same printer's, layout aside. */
-function printed(declaration) {
+function printed(declaration: string): string {
   const scratch = mkdtempSync(join(tmpdir(), "declarations-"));
   try {
     mkdirSync(join(scratch, "src"));
@@ -36,7 +36,7 @@ function printed(declaration) {
 }
 
 /** Each "path code" tsc reports, sorted, for `files` (paths under layers/ to sources) in scratch. */
-function check(files) {
+function check(files: Record<string, string>): string[] {
   const scratch = mkdtempSync(join(tmpdir(), "declarations-"));
   try {
     for (const [path, source] of Object.entries(files)) {

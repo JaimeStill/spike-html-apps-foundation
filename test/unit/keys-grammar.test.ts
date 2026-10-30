@@ -1,5 +1,5 @@
 // The keys family's binding grammar, on src/keys-grammar.ts as node runs it.
-// From spike-html-packages-foundation (5dd8a58): test/unit/keys-grammar.test.js.
+// Adapted from spike-html-packages-foundation (5dd8a58): test/unit/keys-grammar.test.js, in TypeScript.
 
 import assert from "node:assert/strict";
 import { describe, test } from "node:test";
@@ -12,9 +12,10 @@ import {
   problem,
   stringify,
 } from "../../src/keys-grammar.ts";
+import type { Binding, KeyLike, ParseOptions, Press } from "../../src/keys-grammar.ts";
 
 // press builds a parsed press: key, then the modifiers it holds.
-const press = (key, held = {}) => ({
+const press = (key: string, held: Partial<Press> = {}): Press => ({
   key,
   control: false,
   alt: false,
@@ -25,7 +26,7 @@ const press = (key, held = {}) => ({
 
 // event builds a keydown-like object, a US layout's code for an ASCII letter or digit unless
 // given, and no modifier unless given.
-function event(key, held = {}) {
+function event(key: string, held: Partial<KeyLike> = {}): KeyLike {
   const code = /^[a-z]$/i.test(key)
     ? `Key${key.toUpperCase()}`
     : /^[0-9]$/.test(key)
@@ -34,8 +35,16 @@ function event(key, held = {}) {
   return { key, code, shiftKey: false, altKey: false, ctrlKey: false, metaKey: false, ...held };
 }
 
+// valid parses a binding the case writes well formed, throwing, so failing the case, if it isn't.
+function valid(binding: string, options?: ParseOptions): Binding {
+  const parsed = parse(binding, options);
+  if (parsed === null) throw new Error(`${binding} doesn't parse`);
+  return parsed;
+}
+
 // pressed reports whether the first press of binding's first alternative matches e.
-const pressed = (binding, e, options) => matches(parse(binding, options)[0][0], e);
+const pressed = (binding: string, e: KeyLike, options?: ParseOptions) =>
+  matches(valid(binding, options)[0][0], e);
 
 describe("keys grammar: parse", () => {
   test("a letter is one press, lowercase, Shift up", () => {
@@ -117,7 +126,7 @@ describe("keys grammar: parse", () => {
 
 describe("keys grammar: stringify", () => {
   test("writes a binding, a sequence, or a press in normal form", () => {
-    const binding = parse("g T, ALT+t, shift+?");
+    const binding = valid("g T, ALT+t, shift+?");
     assert.equal(stringify(binding), "g t, Alt+t, ?");
     assert.equal(stringify(binding[0]), "g t");
     assert.equal(stringify(binding[1][0]), "Alt+t");
@@ -210,7 +219,7 @@ describe("keys grammar: formatting", () => {
   };
   for (const [binding, expected] of Object.entries(FORMATS)) {
     test(`formats ${binding} every way`, () => {
-      const parsed = parse(binding);
+      const parsed = valid(binding);
       assert.equal(stringify(parsed), expected.normal);
       assert.deepEqual(parsed.map(labels), expected.labels);
       assert.equal(keyshortcuts(parsed), expected.keyshortcuts);
@@ -218,19 +227,19 @@ describe("keys grammar: formatting", () => {
   }
 
   test("labels show letters as uppercase keycaps, modifiers in normal order, and Space by name", () => {
-    assert.deepEqual(labels(parse("t")[0]), [["T"]]);
-    assert.deepEqual(labels(parse("shift+control+k")[0]), [["Control", "Shift", "K"]]);
-    assert.deepEqual(labels(parse("Space")[0]), [["Space"]]);
-    assert.deepEqual(labels(parse("Control+Plus")[0]), [["Control", "+"]]);
+    assert.deepEqual(labels(valid("t")[0]), [["T"]]);
+    assert.deepEqual(labels(valid("shift+control+k")[0]), [["Control", "Shift", "K"]]);
+    assert.deepEqual(labels(valid("Space")[0]), [["Space"]]);
+    assert.deepEqual(labels(valid("Control+Plus")[0]), [["Control", "+"]]);
   });
 
   test("aria-keyshortcuts names physical keys, modifiers first", () => {
-    assert.equal(keyshortcuts(parse("t")), "T");
-    assert.equal(keyshortcuts(parse("Shift+t")), "Shift+T");
-    assert.equal(keyshortcuts(parse("Shift+Control+k")), "Control+Shift+K");
-    assert.equal(keyshortcuts(parse("Space")), "Space");
-    assert.equal(keyshortcuts(parse("Escape")), "Escape");
-    assert.equal(keyshortcuts(parse("/")), "/");
+    assert.equal(keyshortcuts(valid("t")), "T");
+    assert.equal(keyshortcuts(valid("Shift+t")), "Shift+T");
+    assert.equal(keyshortcuts(valid("Shift+Control+k")), "Control+Shift+K");
+    assert.equal(keyshortcuts(valid("Space")), "Space");
+    assert.equal(keyshortcuts(valid("Escape")), "Escape");
+    assert.equal(keyshortcuts(valid("/")), "/");
   });
 
   test("a symbol is declared by its US physical key with Shift", () => {
@@ -238,13 +247,13 @@ describe("keys grammar: formatting", () => {
     // US_SHIFTED itself. Plus is the named key, and the quote and backslash need escaping.
     const SHIFTED = { "?": "/", "!": "1", Plus: "=", '"': "'", "|": "\\", "~": "`" };
     for (const [symbol, key] of Object.entries(SHIFTED)) {
-      assert.deepEqual([symbol, keyshortcuts(parse(symbol))], [symbol, `Shift+${key}`]);
+      assert.deepEqual([symbol, keyshortcuts(valid(symbol))], [symbol, `Shift+${key}`]);
     }
-    assert.equal(keyshortcuts(parse("Alt+?")), "Alt+Shift+/");
+    assert.equal(keyshortcuts(valid("Alt+?")), "Alt+Shift+/");
   });
 
   test("alternatives join with a space, and a sequence among them declares nothing", () => {
-    assert.equal(keyshortcuts(parse("t, g t, Alt+T, ?")), "T Alt+T Shift+/");
-    assert.equal(keyshortcuts(parse("g t, g c")), null);
+    assert.equal(keyshortcuts(valid("t, g t, Alt+T, ?")), "T Alt+T Shift+/");
+    assert.equal(keyshortcuts(valid("g t, g c")), null);
   });
 });
