@@ -509,9 +509,9 @@ describe("keys: fields in open shadow roots", () => {
     assert.deepEqual(await log(page), ["t", "/"]);
   });
 
-  test("Escape blurs a field two shadow roots deep, and t fires again", async () => {
+  test("Escape blurs a field one or two shadow roots deep, and t fires again", async () => {
     const page = await open("keys-shadow.html");
-    for (const path of SHADOW_FIELDS.filter((path) => path[0] === "panel")) {
+    for (const path of SHADOW_FIELDS) {
       await page.evaluate(`${deep(path)}.focus()`);
       assert.equal(await isFocused(page, path), true);
       await pressEscape(page);
@@ -519,7 +519,10 @@ describe("keys: fields in open shadow roots", () => {
       assert.equal(await active(page), "body");
       await press(page, "t");
     }
-    assert.deepEqual(await log(page), ["t", "t", "t"]);
+    assert.deepEqual(
+      await log(page),
+      SHADOW_FIELDS.map(() => "t"),
+    );
   });
 });
 
