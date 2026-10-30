@@ -14,12 +14,12 @@ shellcheck = "0.11.0"
 # The browser tier's browser. Chrome for Testing publishes no checksums: take the sha256 and size
 # from the download by hand at each bump.
 [tools."http:chrome-headless-shell"]
-version = "156.0.8078.73"
+version = "156.0.8078.80"
 version_list_url = "https://googlechromelabs.github.io/chrome-for-testing/last-known-good-versions.json"
 version_json_path = ".channels.Stable.version"
 
 [tools."http:chrome-headless-shell".platforms]
-linux-x64 = { url = "https://storage.googleapis.com/chrome-for-testing-public/{{ version }}/linux64/chrome-headless-shell-linux64.zip", checksum = "sha256:77eb8d52798efc7a857ab61abcc62a456d8ea9635b02341d06dffee2761768c8", size = "126938225" }
+linux-x64 = { url = "https://storage.googleapis.com/chrome-for-testing-public/{{ version }}/linux64/chrome-headless-shell-linux64.zip", checksum = "sha256:547dcd374e02961bf998f6046a267644f8502225c36bb78ca307dab32a0b3eb4", size = "126922702" }
 
 [tasks.preflight]
 description = "Fail naming mise run install when a tool the tasks need is missing"
@@ -50,8 +50,18 @@ description = "Lint the GitHub Actions workflows with actionlint"
 run = "actionlint"
 
 [tasks.types]
+description = "Type-check the sources and the suite with tsc"
+depends = ["types:src", "types:test"]
+
+[tasks."types:src"]
 description = "Type-check the sources with tsc"
 run = "tsc --noEmit -p ."
+
+# The suite imports the package's own exports, which resolve to dist/'s declarations.
+[tasks."types:test"]
+description = "Type-check the suite and the capture description with tsc, under tsconfig.test.json"
+depends = ["build"]
+run = "tsc -p tsconfig.test.json"
 
 [tasks.build]
 description = "Build src/ into dist/: tsc's emit, with the .css and handwritten .d.ts beside it"
@@ -60,12 +70,12 @@ run = "scripts/build.sh"
 [tasks."test:unit"]
 description = "Run the unit tier on the sources, the lint, and a pack of the build"
 depends = ["preflight", "build"]
-run = "node --test 'test/unit/*.test.js'"
+run = "node --test 'test/unit/*.test.ts'"
 
 [tasks."test:browser"]
 description = "Run the browser tier on dist/ in the pinned chrome-headless-shell"
 depends = ["preflight browser", "build"]
-run = "BROWSER_EXECUTABLE=$(mise which chrome-headless-shell) node --test 'test/browser/*.test.js'"
+run = "BROWSER_EXECUTABLE=$(mise which chrome-headless-shell) node --test 'test/browser/*.test.ts'"
 
 [tasks.check]
 description = "Run every check; reads no network; writes dist/"
@@ -82,13 +92,15 @@ run = "node scripts/demo.js"
 
 # Never a dependency of check: a reviewer's look at the pages, not a test.
 [tasks.screenshots]
-description = "Capture the tools page, keys help, and the theme menu in every profile and scheme, shown inline in kitty; --keep leaves the captures"
+description = "Capture the tools page, keys help, and the theme menu light and dark, inline in kitty: at the defaults, or --palette/--space/--type <name>, or --all for every profile; --page <name> (repeatable) and --scheme light|dark narrow it; --output directory|browser and --dir <path> choose where they go; --keep leaves the captures"
 depends = ["preflight browser", "build"]
+# The tooling's bin over the capture description; the task's arguments follow it, with or without
+# a leading --.
 # raw: with dependencies, mise prefixes a task's output through a pipe; icat needs the terminal.
 raw = true
-run = "scripts/screenshots.sh"
+run = "BROWSER_EXECUTABLE=$(mise which chrome-headless-shell) pnpm exec spike-html-apps-screenshots scripts/screenshots.config.ts"
 
 [tasks.currency]
-description = "Report every mise tool, package.json pin, and action pin behind its latest, exiting nonzero if any"
+description = "Report every mise tool, package.json pin, action pin, and the tooling's tag behind its latest, exiting nonzero if any"
 run = "scripts/currency.sh"
 quiet = true

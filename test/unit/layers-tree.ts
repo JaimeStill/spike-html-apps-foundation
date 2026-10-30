@@ -1,7 +1,7 @@
 // The layer's import cases as one file tree in the repository's shape: a file per forbidden import
 // and form, each with the rules that catch it, and the imports the layer may make in the same
-// layout. layers.test.js lints it.
-// Adapted from spike-html-packages-foundation (5dd8a58): test/unit/layers-tree.js, renamed.
+// layout. layers.test.ts lints it.
+// Adapted from spike-html-packages-foundation (5dd8a58): test/unit/layers-tree.js, renamed, in TypeScript.
 
 import { spawnSync } from "node:child_process";
 import { mkdirSync, readFileSync, symlinkSync, writeFileSync } from "node:fs";
@@ -11,7 +11,9 @@ const root = join(import.meta.dirname, "../..");
 
 /** The package's manifest as it stands, which the tree carries, so each import is judged against
  * it. */
-export const manifest = JSON.parse(readFileSync(join(root, "package.json"), "utf8"));
+export const manifest: { name: string; devDependencies: Record<string, string> } = JSON.parse(
+  readFileSync(join(root, "package.json"), "utf8"),
+);
 const foundation = manifest.name;
 
 /** The sibling layers and spike-html-apps' app, which the foundation never imports. */
@@ -28,7 +30,7 @@ export const watched = [table, extraneous, relativePackages, cssModule, "import-
 
 /** An edge in each of the four import forms, one file per form, each named for the edge and its
  * form: a side-effect import, a type import, a re-export, and an import(). */
-function forms(base, specifier) {
+function forms(base: string, specifier: string): Record<string, string> {
   return {
     [`${base}.ts`]: `import "${specifier}";`,
     [`${base}-type.ts`]: `import type { X } from "${specifier}";`,
@@ -37,8 +39,14 @@ function forms(base, specifier) {
   };
 }
 
+/** A case: a file's source and the rules that flag it. */
+export interface Case {
+  source: string;
+  rules: string[];
+}
+
 /** `files`, each path to its source and the rules that flag it, sorted. */
-function by(rules, files) {
+function by(rules: string[], files: Record<string, string>): Record<string, Case> {
   return Object.fromEntries(
     Object.entries(files).map(([path, source]) => [path, { source, rules: [...rules].sort() }]),
   );
@@ -89,12 +97,12 @@ export const violations = {
 };
 
 /** `cases`, each path to its source alone. */
-export const sources = (cases) =>
+export const sources = (cases: Record<string, Case>): Record<string, string> =>
   Object.fromEntries(Object.entries(cases).map(([path, { source }]) => [path, source]));
 
 // Every import the layer may make, in each form, with names that hold dots, which a rule must tell
 // from . and .. segments.
-export const allowed = {
+export const allowed: Record<string, string> = {
   "src/dom.ts": `export { x } from "./events.ts";`,
   "src/nested/own.ts": `import type { X } from "../dom.ts";\nawait import("../dom.ts");`,
   "src/nested/index.ts": `import "..";\nexport * from "./";`,
@@ -126,7 +134,7 @@ const targets = {
 /** The packages the cases name, as stubs in node_modules/: lit, the siblings, the app,
  * and typescript, a devDependency, each a module and its types at every subpath. */
 const externals = ["lit", ...siblings, app, "typescript"];
-const stub = (name) => ({
+const stub = (name: string): Record<string, string> => ({
   "package.json": JSON.stringify({
     name,
     type: "module",
@@ -146,8 +154,12 @@ const stub = (name) => ({
 /** Writes `files` under `dir` with the manifest, the targets, the externals, and a link to the
  * package itself, as an install of its own name lays it out, so every import resolves and the lint
  * judges it. Returns the code files written under src/. */
-export function writeTree(dir, files) {
-  const written = { ...files, ...targets, "package.json": JSON.stringify(manifest) };
+export function writeTree(dir: string, files: Record<string, string>): string[] {
+  const written: Record<string, string> = {
+    ...files,
+    ...targets,
+    "package.json": JSON.stringify(manifest),
+  };
   for (const name of externals) {
     for (const [path, source] of Object.entries(stub(name))) {
       written[join("node_modules", name, path)] = source;
@@ -163,10 +175,16 @@ export function writeTree(dir, files) {
   return Object.keys(written).filter((path) => path.startsWith("src/") && /\.(js|ts)$/.test(path));
 }
 
+/** A file of ESLint's JSON report, with the fields the cases read. */
+export interface LintResult {
+  filePath: string;
+  messages: { ruleId: string | null; fatal?: boolean }[];
+}
+
 /** ESLint's JSON report on the tree under `dir`'s src/. -c takes the repo's config, whose patterns
  * then match from the working directory, the tree, and whose plugins load from the repo's
  * node_modules. Throws when ESLint doesn't run or exits other than 0 or 1. */
-export function lint(dir) {
+export function lint(dir: string): LintResult[] {
   const eslint = join(root, "node_modules", ".bin", "eslint");
   const run = spawnSync(eslint, ["-c", join(root, "eslint.config.js"), "-f", "json", "src"], {
     cwd: dir,

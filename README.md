@@ -72,12 +72,12 @@ then lists the profile. The profile must pass `check(facet, name)`.
 Tasks run through [mise](https://mise.jdx.dev):
 
 ```
-mise run install              # the pinned tools and node_modules; reads the network
-mise run check                # lint, types, build, and the unit and browser tiers; reads no network
-mise run build                # src/ into dist/
-mise run demo                 # serve the demo pages on dist/
-mise run screenshots [--keep] # capture the demo pages in each profile, shown inline in kitty
-mise run currency             # report every tool, package, and action pin behind its latest
+mise run install      # the pinned tools and node_modules; reads the network
+mise run check        # lint, types, build, and the unit and browser tiers; reads no network
+mise run build        # src/ into dist/
+mise run demo         # serve the demo pages on dist/
+mise run screenshots  # capture the demo pages light and dark, shown inline in kitty
+mise run currency     # report every tool, package, action pin, and tooling tag behind its latest
 ```
 
 The demo pages, in `demo/`, are `tools.html` (every tool class), `profiles.html` (the tools page
@@ -85,8 +85,12 @@ switched through every profile), `theme.html` (the theme menu on `page-full.css`
 (`page.css` with the Primer unit), `keys.html`, and `format.html`. Page layout belongs to the
 consumer, so each page links `demo.css`, a `demo` layer of its own that lays out the column and
 its sections. `mise run screenshots` renders the tools page, keys help, and the theme menu, wide
-and narrow, in each color and in compact and sans, light and dark, into a temporary directory it
-removes on exit unless `--keep` is given. The check never runs it.
+and narrow, light and dark, on `page-full.css`. It runs the `spike-html-apps-screenshots` bin of
+[spike-html-apps-tooling](https://github.com/JaimeStill/spike-html-apps-tooling), the
+devDependency the browser tier's driver and server also come from, over the capture description
+in `scripts/screenshots.config.ts`, and passes its arguments on. With none it captures the default
+profile, and `--all` captures every color and compact and sans; `mise run screenshots -- --help`
+lists the other flags, and the tooling's README documents them. The check never runs it.
 
 A push to main whose `package.json` version has no tag yet releases it: the check, then the pack
 committed and tagged, and a GitHub release from `CHANGELOG.md`.

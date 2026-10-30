@@ -3,25 +3,37 @@
 // from another origin, whose rules chromium hides; each fixture profile in
 // test/fixtures/conformance/ fails the one rule it breaks, by name; and the check rejects what it
 // can't check, and leaves the page as it found it.
-// Adapted from spike-html-design (fe75220): test/conformance.test.js.
+// Adapted from spike-html-design (fe75220): test/conformance.test.js, in TypeScript.
 
 import assert from "node:assert/strict";
+import { join } from "node:path";
 import { after, afterEach, before, describe, test } from "node:test";
 
-import { launch } from "./support/browser-pipe.js";
-import { serve } from "./support/server.js";
+import { launch } from "@jaimestill/spike-html-apps-tooling/browser.js";
+import { serve } from "@jaimestill/spike-html-apps-tooling/server.js";
+import type { Browser, Page } from "@jaimestill/spike-html-apps-tooling/browser.js";
+import type { Server } from "@jaimestill/spike-html-apps-tooling/server.js";
+import type { Failure } from "@jaimestill/spike-html-apps-foundation/conformance.js";
+
+/** The repository root, which the server serves. */
+const root = join(import.meta.dirname, "../..");
 
 const CONFORMANCE = "/dist/conformance.js";
 
+/** Profile names, facet to list. */
+type Names = Record<string, string[]>;
+/** check()'s failures for each facet's names, facet to name to list. */
+type Results = Record<string, Record<string, Failure[]>>;
+
 /** The full entry's profiles, per facet. */
-const BUILT_IN = {
+const BUILT_IN: Names = {
   color: ["flexoki", "primer", "catppuccin", "everforest"],
   space: ["regular", "compact"],
   type: ["mono", "sans"],
 };
 
 /** The fixture profiles, per facet, each to the one rule it breaks. */
-const BROKEN = {
+const BROKEN: Record<string, Record<string, string>> = {
   color: {
     missing: "tokens",
     spacing: "color-only",
@@ -50,16 +62,16 @@ const BROKEN = {
   },
 };
 
-let server;
-let other;
-let browser;
-const pages = [];
-const fixture = (name) => `${server.origin}/test/fixtures/${name}`;
+let server: Server;
+let other: Server;
+let browser: Browser;
+const pages: Page[] = [];
+const fixture = (name: string) => `${server.origin}/test/fixtures/${name}`;
 
 before(async () => {
-  server = await serve();
+  server = await serve({ root });
   // A second origin for the cross-origin case: the same tree on another port.
-  other = await serve();
+  other = await serve({ root });
   browser = await launch();
 });
 afterEach(async () => {
@@ -72,7 +84,7 @@ after(async () => {
 });
 
 /** Opens the URL, closing it after the test. */
-async function open(url) {
+async function open(url: string): Promise<Page> {
   const page = await browser.open(url);
   pages.push(page);
   return page;
@@ -82,7 +94,7 @@ async function open(url) {
  * The failures check() returns for each facet's names on the page, facet to name to list, with the
  * conformance module imported from dist/.
  */
-const checked = (page, names) =>
+const checked = (page: Page, names: Names): Promise<Results> =>
   page.evaluate(`import(${JSON.stringify(CONFORMANCE)}).then(async ({ check }) => {
     const results = {};
     for (const [facet, list] of Object.entries(${JSON.stringify(names)})) {
@@ -93,7 +105,7 @@ const checked = (page, names) =>
   })`);
 
 /** The result checked() resolves to when every one of names conforms. */
-const conforming = (names) =>
+const conforming = (names: Names) =>
   Object.fromEntries(
     Object.entries(names).map(([facet, list]) => [
       facet,
@@ -102,7 +114,7 @@ const conforming = (names) =>
   );
 
 /** Each fixture's rule names, facet to name to list, from checked()'s results. */
-const rules = (results) =>
+const rules = (results: Results) =>
   Object.fromEntries(
     Object.entries(results).map(([facet, byName]) => [
       facet,
@@ -158,7 +170,7 @@ describe("conformance", () => {
 
   test("every rule the module exports has a fixture that breaks it", async () => {
     const page = await open(fixture("conformance.html"));
-    const RULES = await page.evaluate(
+    const RULES: Record<string, string[]> = await page.evaluate(
       `import(${JSON.stringify(CONFORMANCE)}).then(({ RULES }) => RULES)`,
     );
     assert.deepEqual(Object.keys(RULES), Object.keys(BROKEN));
@@ -174,7 +186,8 @@ describe("conformance", () => {
       space: ["missing", "flat", "absent"],
       type: ["missing", "descending", "unfamilied", "absent"],
     });
-    const messages = (facet, name) => results[facet][name].map(({ message }) => message);
+    const messages = (facet: string, name: string) =>
+      results[facet][name].map(({ message }) => message);
     assert.deepEqual(messages("color", "missing"), [
       "missing: sets no color in a scheme for --magenta (light, dark)",
     ]);

@@ -5,22 +5,59 @@
 // profile it adds shows; each entry's registration module lists exactly the profiles it defines,
 // and each built-in unit's module registers its one profile and loads no CSS.
 // demo/profiles.html switches the tools page through every profile.
-// Adapted from spike-html-packages-foundation (5dd8a58): test/browser/tools.test.js.
+// Adapted from spike-html-packages-foundation (5dd8a58): test/browser/tools.test.js, in TypeScript.
 
 import assert from "node:assert/strict";
 import { readFileSync } from "node:fs";
 import { join } from "node:path";
 import { after, before, describe, test } from "node:test";
 
-import { launch } from "./support/browser-pipe.js";
+import { launch } from "@jaimestill/spike-html-apps-tooling/browser.js";
+import { serve } from "@jaimestill/spike-html-apps-tooling/server.js";
+import type { Browser, Page } from "@jaimestill/spike-html-apps-tooling/browser.js";
+import type { Server } from "@jaimestill/spike-html-apps-tooling/server.js";
+import type { Facet } from "@jaimestill/spike-html-apps-foundation/registry.js";
 import { concerns, differences } from "./support/computed-styles.js";
-import { root, serve } from "./support/server.js";
+
+/** A page's computed styles, as computed-styles.js's reading() returns them: element to property
+ * to value. */
+type Reading = Record<string, Record<string, string>>;
+/** One declaration computed-styles.js's drops() dropped, and the differences its absence made. */
+interface Drop {
+  sheet: string;
+  selector: string;
+  declaration: string;
+  differs: number;
+}
+/** One option of demo/profiles.html's switches, chosen: the frame root's attribute and the token
+ * and scheme it then computes. */
+interface Switch {
+  value: string;
+  attribute: string | null;
+  token: string;
+  scheme: string;
+}
+/** A lateral-concern sheet adopted alone, as computed-styles.js's adopt() reports it: its
+ * @import count, its top-level rules, and its sample's two properties. */
+interface Adopted {
+  imports: number;
+  rules: string[];
+  [property: string]: number | string | string[];
+}
+/** A profile of a facet. */
+interface Profile {
+  facet: Facet;
+  name: string;
+}
+
+/** The repository root, which the server serves. */
+const root = join(import.meta.dirname, "../..");
 
 const reference = "/test/fixtures/v0.7.0/baseline.css";
 const entry = "/dist/page.css";
 const fullReference = "/test/fixtures/v0.7.0/full.css";
 const fullEntry = "/dist/page-full.css";
-const sheet = (concern) => `/dist/${concern}.css`;
+const sheet = (concern: string) => `/dist/${concern}.css`;
 
 /** The foundation's layers, in the order the page entry states. */
 const LAYER_ORDER = [
@@ -35,9 +72,9 @@ const LAYER_ORDER = [
   "foundation.theme-menu",
 ];
 
-const FACETS = ["color", "space", "type"];
+const FACETS: Facet[] = ["color", "space", "type"];
 /** One token per facet that tells its profile apart, with its value under each profile. */
-const PROFILES = {
+const PROFILES: Record<Facet, Record<string, Record<string, string>>> = {
   color: { flexoki: { "--bg": "light-dark(#fffcf0, #100f0f)" } },
   space: { regular: { "--radius-base": "0.375rem" } },
   type: {
@@ -47,49 +84,58 @@ const PROFILES = {
     },
   },
 };
-const TOKENS = FACETS.flatMap((facet) => Object.values(PROFILES[facet]).flatMap(Object.keys));
+const TOKENS = FACETS.flatMap((facet) =>
+  Object.values(PROFILES[facet]).flatMap((tokens) => Object.keys(tokens)),
+);
 
 /** Each facet's profile attribute, as v0.7.0 names them. */
-const ATTRIBUTES = { color: "data-palette", space: "data-space", type: "data-type" };
+const ATTRIBUTES: Record<Facet, string> = {
+  color: "data-palette",
+  space: "data-space",
+  type: "data-type",
+};
 /** The profiles each entry ships, per facet, in the order it imports them. */
-const LEAN = { color: ["flexoki"], space: ["regular"], type: ["mono"] };
-const FULL = {
+const LEAN: Record<Facet, string[]> = { color: ["flexoki"], space: ["regular"], type: ["mono"] };
+const FULL: Record<Facet, string[]> = {
   color: ["flexoki", "primer", "catppuccin", "everforest"],
   space: ["regular", "compact"],
   type: ["mono", "sans"],
 };
 const SCHEMES = ["light", "dark"];
 /** Each profile of the full entry, as a facet and a name. */
-const FULL_PROFILES = FACETS.flatMap((facet) => FULL[facet].map((name) => ({ facet, name })));
+const FULL_PROFILES: Profile[] = FACETS.flatMap((facet) =>
+  FULL[facet].map((name) => ({ facet, name })),
+);
 /** The profiles the full entry adds to the lean one. */
 const ADDED = FULL_PROFILES.filter(({ facet, name }) => !LEAN[facet].includes(name));
 
 /** A file of the repository, by its path on the server, without its CSS comments. */
-const source = (path) => readFileSync(join(root, path), "utf8").replace(/\/\*[\s\S]*?\*\//g, "");
+const source = (path: string) =>
+  readFileSync(join(root, path), "utf8").replace(/\/\*[\s\S]*?\*\//g, "");
 
 /** The class names a stylesheet's selectors name, sorted. */
-function classes(css) {
+function classes(css: string): string[] {
   // A dot after a digit is a number's decimal point, not a class.
   const names = [...css.matchAll(/(?<![\w-])\.(-?[A-Za-z_][\w-]*)/g)].map((match) => match[1]);
   return [...new Set(names)].sort();
 }
 
 /** Forces :hover on the page's body and every element in it, through the DevTools Protocol. */
-async function forceHover(page) {
+async function forceHover(page: Page) {
   await page.cdp("DOM.enable");
   await page.cdp("CSS.enable");
   const { root: tree } = await page.cdp("DOM.getDocument");
-  const { nodeIds } = await page.cdp("DOM.querySelectorAll", {
+  const { nodeIds }: { nodeIds: number[] } = await page.cdp("DOM.querySelectorAll", {
     nodeId: tree.nodeId,
     selector: "body, body *",
   });
-  const hover = (nodeId) =>
+  const hover = (nodeId: number) =>
     page.cdp("CSS.forcePseudoState", { nodeId, forcedPseudoClasses: ["hover"] });
   await Promise.all(nodeIds.map(hover));
 }
 
 /** The custom properties a stylesheet declares, sorted. */
-const declared = (css) =>
+const declared = (css: string) =>
   [...new Set([...css.matchAll(/(--[\w-]+)\s*:/g)].map((m) => m[1]))].sort();
 
 /**
@@ -104,7 +150,7 @@ const SENTINELS = Object.fromEntries(
 );
 
 /** The setup scope() takes for a profile in a scheme, on the root or scoped under sentinels. */
-const setup = ({ facet, name }, scheme, scoped) => ({
+const setup = ({ facet, name }: Profile, scheme: string, scoped: boolean) => ({
   attribute: ATTRIBUTES[facet],
   name,
   scheme,
@@ -112,14 +158,14 @@ const setup = ({ facet, name }, scheme, scoped) => ({
 });
 
 /** At most 40 lines of a failure's list. */
-const head = (lines) => lines.slice(0, 40).join("\n") + (lines.length > 40 ? "\n…" : "");
+const head = (lines: string[]) => lines.slice(0, 40).join("\n") + (lines.length > 40 ? "\n…" : "");
 
 describe("foundation tools", () => {
-  let server;
-  let browser;
+  let server: Server;
+  let browser: Browser;
 
   /** demo/tools.html on the stack of sheets, with computed-styles.js bound as window.m. */
-  async function toolsPage(sheets) {
+  async function toolsPage(sheets: string): Promise<Page> {
     const page = await browser.open(`${server.origin}/demo/tools.html`);
     await page.evaluate(`import("/test/browser/support/computed-styles.js")
       .then((m) => (window.m = m).useSheets(${JSON.stringify(sheets)}))`);
@@ -127,7 +173,7 @@ describe("foundation tools", () => {
   }
 
   /** The page's reading on the stack of sheets, at rest and hovered. */
-  async function snapshot(sheets) {
+  async function snapshot(sheets: string): Promise<{ rest: Reading; hover: Reading }> {
     const page = await toolsPage(sheets);
     const rest = await page.evaluate("m.reading()");
     await forceHover(page);
@@ -137,7 +183,7 @@ describe("foundation tools", () => {
   }
 
   /** The page's reading at rest on the stack of sheets, with scope() applied first. */
-  async function scoped(sheets, options) {
+  async function scoped(sheets: string, options: object): Promise<Reading> {
     const page = await toolsPage(sheets);
     await page.evaluate(`m.scope(${JSON.stringify(options)})`);
     const rest = await page.evaluate("m.reading()");
@@ -148,10 +194,10 @@ describe("foundation tools", () => {
   // v0.7.0's reading, which every comparison is against, and its lean reading in each scheme
   // forced on the root, which an added profile's must differ from, so a profile that applied
   // nothing can't pass.
-  let upstream;
-  const defaults = {};
+  let upstream: { rest: Reading; hover: Reading };
+  const defaults: Record<string, Reading> = {};
   before(async () => {
-    server = await serve();
+    server = await serve({ root });
     browser = await launch();
     upstream = await snapshot(reference);
     for (const scheme of SCHEMES) defaults[scheme] = await scoped(reference, { scheme });
@@ -194,7 +240,7 @@ describe("foundation tools", () => {
 
   // The registry must hold no profile whose sheet the page didn't load: each entry, with its
   // registration module imported, registers exactly the profiles its sheets define, in order.
-  const registrations = [
+  const registrations: [string, string, Record<Facet, string[]>][] = [
     [entry, "/dist/register.js", LEAN],
     [fullEntry, "/dist/register-full.js", FULL],
   ];
@@ -249,7 +295,12 @@ describe("foundation tools", () => {
         tokens: Object.fromEntries(${JSON.stringify(TOKENS)}.map((name) => [name, token(name)])),
       };
     })`;
-    const { attributes, defaults, tokens } = await page.evaluate(read);
+    const {
+      attributes,
+      defaults,
+      tokens,
+    }: { attributes: number; defaults: Record<Facet, string>; tokens: Record<string, string> } =
+      await page.evaluate(read);
     await page.close();
     assert.equal(attributes, 0);
     assert.deepEqual(
@@ -261,7 +312,7 @@ describe("foundation tools", () => {
   test("every tool class computes as v0.7.0's, at rest and hovered", async () => {
     assert.notEqual(differences(upstream.rest, upstream.hover).length, 0, "hover changed nothing");
     const ours = await snapshot(entry);
-    const lines = ["rest", "hover"].flatMap((state) =>
+    const lines = (["rest", "hover"] as const).flatMap((state) =>
       differences(upstream[state], ours[state]).map((line) => `${state} ${line}`),
     );
     assert.deepEqual(lines, [], head(lines));
@@ -284,7 +335,7 @@ describe("foundation tools", () => {
   for (const profile of FULL_PROFILES) {
     for (const scheme of SCHEMES) {
       test(`${ATTRIBUTES[profile.facet]}="${profile.name}" computes as v0.7.0's, ${scheme}`, async () => {
-        const found = [];
+        const found: string[] = [];
         for (const scope of [false, true]) {
           const options = setup(profile, scheme, scope);
           const ours = await scoped(fullEntry, options);
@@ -310,9 +361,10 @@ describe("foundation tools", () => {
       const theirs = await scoped(fullReference, options);
       const page = await toolsPage(fullEntry);
       await page.evaluate(`m.scope(${JSON.stringify(options)})`);
-      const tried = await page.evaluate(`m.drops(${JSON.stringify(theirs)}, ["${file}"])`);
+      const tried: Drop[] = await page.evaluate(`m.drops(${JSON.stringify(theirs)}, ["${file}"])`);
       await page.close();
       const written = source(`/dist${file}`).match(/^\s*-*[a-z][\w-]*\s*:[^;{]*;/gm);
+      assert.ok(written, `${file} writes no declaration`);
       assert.equal(tried.length, written.length, "every declaration written is tried");
       const missed = tried
         .filter(({ differs }) => differs === 0)
@@ -323,15 +375,16 @@ describe("foundation tools", () => {
 
   test("dropping any one declaration of the three sheets fails the comparison", async () => {
     const page = await toolsPage(entry);
-    const rest = await page.evaluate(`m.drops(${JSON.stringify(upstream.rest)})`);
+    const rest: Drop[] = await page.evaluate(`m.drops(${JSON.stringify(upstream.rest)})`);
     await forceHover(page);
-    const hover = await page.evaluate(`m.drops(${JSON.stringify(upstream.hover)})`);
+    const hover: Drop[] = await page.evaluate(`m.drops(${JSON.stringify(upstream.hover)})`);
     await page.close();
     // One declaration per `property: value;` line, as each of the three sheets writes them.
     const written = concerns
       .map((c) => source(sheet(c)))
       .join("\n")
       .match(/^\s*-*[a-z][\w-]*\s*:[^;{]*;/gm);
+    assert.ok(written, "the three sheets write no declaration");
     assert.equal(rest.length, written.length, "every declaration written is tried");
     const missed = rest
       .filter((drop, i) => drop.differs + hover[i].differs === 0)
@@ -343,7 +396,7 @@ describe("foundation tools", () => {
     const page = await browser.open(`${server.origin}/demo/profiles.html`);
     // Each switch's options, and per option the frame root's attribute and a token it then reads,
     // once the frame's link has moved to the full entry and loaded.
-    const seen = await page.evaluate(`(async () => {
+    const seen: Record<string, Switch[]> = await page.evaluate(`(async () => {
       const frame = document.querySelector("iframe");
       // The page sets the attributes only once the frame's full entry has loaded.
       const ready = () => frame.contentDocument?.documentElement.hasAttribute("data-palette");
@@ -370,7 +423,11 @@ describe("foundation tools", () => {
       return out;
     })()`);
     await page.close();
-    const facets = { "data-palette": "color", "data-space": "space", "data-type": "type" };
+    const facets: Record<string, Facet> = {
+      "data-palette": "color",
+      "data-space": "space",
+      "data-type": "type",
+    };
     for (const [attribute, facet] of Object.entries(facets)) {
       const options = seen[attribute];
       assert.deepEqual(
@@ -393,7 +450,8 @@ describe("foundation tools", () => {
 
   test("each sheet is self-layered and @import-free, and a shadow root adopts it alone", async () => {
     const page = await browser.open(`${server.origin}/demo/tools.html`);
-    const adopted = await page.evaluate(`import("/test/browser/support/computed-styles.js")
+    const adopted: Record<string, Adopted> =
+      await page.evaluate(`import("/test/browser/support/computed-styles.js")
       .then((m) => m.adopt("/dist"))`);
     await page.close();
     for (const concern of concerns) {
