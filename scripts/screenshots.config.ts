@@ -6,18 +6,18 @@
 // Adapted from spike-html-apps-foundation (9c15b8d): scripts/screenshots.js, its states, profiles,
 // and open steps as a Description.
 
-import { until } from "@jaimestill/spike-html-apps-tooling/browser.js";
-
-/** @typedef {import("@jaimestill/spike-html-apps-tooling/browser.js").Page} Page */
+import { until, type Page } from "@jaimestill/spike-html-apps-tooling/browser.js";
+import type {
+  Description,
+  Step,
+  Viewport,
+} from "@jaimestill/spike-html-apps-tooling/screenshots.js";
 
 // Below the theme menu's 48rem breakpoint: a phone's width.
-const NARROW = { width: 390, height: 844 };
+const NARROW: Viewport = { width: 390, height: 844 };
 
-/**
- * Sends ? as a US keyboard types it, Shift held, to the page's keys.js.
- * @param {Page} page
- */
-async function pressHelp(page) {
+/** Sends ? as a US keyboard types it, Shift held, to the page's keys.js. */
+async function pressHelp(page: Page): Promise<void> {
   const event = { key: "?", code: "Slash", modifiers: 8, windowsVirtualKeyCode: 191 };
   await page.cdp("Input.dispatchKeyEvent", { type: "keyDown", ...event, text: "?" });
   await page.cdp("Input.dispatchKeyEvent", { type: "keyUp", ...event });
@@ -26,12 +26,11 @@ async function pressHelp(page) {
 /**
  * Opens the theme menu: the Theme button's command="--open", as a click sends it to
  * <sl-theme-menu>.
- * @param {Page} page
  */
-async function openThemeMenu(page) {
+const openThemeMenu: Step = async (page) => {
   await page.evaluate(`document.querySelector("button[commandfor=theme]").click()`);
   await until(page, `document.querySelector("sl-theme-menu dialog")?.open`);
-}
+};
 
 /** Points the page's stylesheet link at the full entry, unless it links it, and waits for it. */
 const FULL_ENTRY = `(async () => {
@@ -45,8 +44,7 @@ const FULL_ENTRY = `(async () => {
   await loaded;
 })()`;
 
-/** @type {import("@jaimestill/spike-html-apps-tooling/screenshots.js").Description} */
-export default {
+const description: Description = {
   pages: [
     // One full-page capture, the bin's default state.
     { name: "tools", caption: "the tools page", path: "demo/tools.html" },
@@ -106,3 +104,5 @@ export default {
   // The repository root, against this module's directory: the demo pages load ../dist/.
   server: { root: ".." },
 };
+
+export default description;

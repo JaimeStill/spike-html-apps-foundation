@@ -88,7 +88,7 @@ its sections. `mise run screenshots` renders the tools page, keys help, and the 
 and narrow, light and dark, on `page-full.css`. It runs the `spike-html-apps-screenshots` bin of
 [spike-html-apps-tooling](https://github.com/JaimeStill/spike-html-apps-tooling), the
 devDependency the browser tier's driver and server also come from, over the capture description
-in `scripts/screenshots.config.js`, and passes its arguments on. With none it captures the default
+in `scripts/screenshots.config.ts`, and passes its arguments on. With none it captures the default
 profile; `--palette`, `--space`, and `--type` name another, `--all` captures every color and
 compact and sans, and `--page` and `--scheme` narrow the run. `--output directory` or
 `--output browser`, a gallery, keeps the captures, in `--dir <path>` if given; the default,

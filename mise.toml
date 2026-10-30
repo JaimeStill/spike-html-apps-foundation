@@ -59,7 +59,7 @@ run = "tsc --noEmit -p ."
 
 # The suite imports the package's own exports, which resolve to dist/'s declarations.
 [tasks."types:test"]
-description = "Type-check the suite with tsc, under tsconfig.test.json"
+description = "Type-check the suite and the capture description with tsc, under tsconfig.test.json"
 depends = ["build"]
 run = "tsc -p tsconfig.test.json"
 
@@ -98,7 +98,7 @@ depends = ["preflight browser", "build"]
 # a leading --.
 # raw: with dependencies, mise prefixes a task's output through a pipe; icat needs the terminal.
 raw = true
-run = "BROWSER_EXECUTABLE=$(mise which chrome-headless-shell) pnpm exec spike-html-apps-screenshots scripts/screenshots.config.js"
+run = "BROWSER_EXECUTABLE=$(mise which chrome-headless-shell) pnpm exec spike-html-apps-screenshots scripts/screenshots.config.ts"
 
 [tasks.currency]
 description = "Report every mise tool, package.json pin, action pin, and the tooling's tag behind its latest, exiting nonzero if any"
