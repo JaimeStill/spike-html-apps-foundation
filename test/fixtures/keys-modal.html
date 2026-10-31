@@ -1,0 +1,73 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <title>keys shadow-root modal fixture</title>
+    <link rel="stylesheet" href="../../dist/page.css" />
+    <script type="module" src="../../dist/keys.js"></script>
+  </head>
+  <body>
+    <h1>keys shadow-root modal fixture</h1>
+    <p>Three modal dialogs, each holding a field and a slotted M button: one in the document, one in x-modal's open shadow root, and one in the x-modal inside x-nest's own, two shadow roots deep. While any is open, only its M fires: not T, /, or ?, which opens help. Escape in its field leaves the field to the dialog, which closes. The host dialog, first in the document, holds an O button and an x-modal: with the x-modal or the document's dialog open over it, only the topmost modal's M fires, and O fires again once it closes.</p>
+    <p>
+      <button type="button" commandfor="help" command="show-modal" data-keys="?">Help <kbd>?</kbd></button>
+      <button type="button" data-keys="t" data-log="t">Theme <kbd>T</kbd></button>
+    </p>
+    <dialog id="host">
+      <button type="button" data-keys="o" data-log="o">Host <kbd>O</kbd></button>
+      <x-modal id="over">
+        <button type="button" data-keys="m" data-log="m over">Over <kbd>M</kbd></button>
+      </x-modal>
+    </dialog>
+    <dialog id="light">
+      <label>Field <input type="text" id="field" /></label>
+      <button type="button" data-keys="m" data-log="m light">Inside <kbd>M</kbd></button>
+    </dialog>
+    <x-modal id="one">
+      <button type="button" data-keys="m" data-log="m one">Inside <kbd>M</kbd></button>
+    </x-modal>
+    <x-nest id="two">
+      <button type="button" data-keys="m" data-log="m two">Inside <kbd>M</kbd></button>
+    </x-nest>
+    <dialog id="help" aria-labelledby="help-title">
+      <h2 id="help-title">Keyboard shortcuts</h2>
+      <div data-keys-list></div>
+      <button type="button" commandfor="help" command="close" data-keys="?">Close <kbd>?</kbd></button>
+    </dialog>
+    <script type="module">
+      // x-modal: a dialog in an open shadow root, its field its own and its button slotted, as a
+      // drawer's content is.
+      customElements.define(
+        "x-modal",
+        class extends HTMLElement {
+          constructor() {
+            super();
+            this.attachShadow({ mode: "open" }).innerHTML = `
+              <dialog id="dialog">
+                <label>Field <input type="text" id="field" /></label>
+                <slot></slot>
+              </dialog>`;
+          }
+        },
+      );
+      // x-nest: an x-modal inside a component, its dialog two shadow roots deep; x-nest's own
+      // children pass through to it.
+      customElements.define(
+        "x-nest",
+        class extends HTMLElement {
+          constructor() {
+            super();
+            this.attachShadow({ mode: "open" }).innerHTML =
+              `<x-modal id="inner"><slot></slot></x-modal>`;
+          }
+        },
+      );
+      // log records each action a binding runs, in order, for the tests and the reader.
+      window.log = [];
+      document.addEventListener("click", (event) => {
+        const name = event.target.closest?.("[data-log]")?.dataset.log;
+        if (name) window.log.push(name);
+      });
+    </script>
+  </body>
+</html>

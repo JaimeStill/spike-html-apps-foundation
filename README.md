@@ -13,9 +13,9 @@ Each release is a tag, `v<version>`, whose tree is the package as `pnpm pack` bu
 `package.json`, this README, the LICENSE, and `dist/`. Install it by the tag:
 
 ```
-npm install --allow-git=root github:JaimeStill/spike-html-apps-foundation#v0.2.2
-pnpm add github:JaimeStill/spike-html-apps-foundation#v0.2.2
-bun add github:JaimeStill/spike-html-apps-foundation#v0.2.2
+npm install --allow-git=root github:JaimeStill/spike-html-apps-foundation#v0.2.3
+pnpm add github:JaimeStill/spike-html-apps-foundation#v0.2.3
+bun add github:JaimeStill/spike-html-apps-foundation#v0.2.3
 ```
 
 npm 12 refuses git dependencies unless `--allow-git` allows them; `root` allows the ones the
@@ -60,6 +60,12 @@ the modules by their `.js` subpaths. The lean entry, `page.css`, carries the def
   `formatRelative`, and `formatDuration`, each taking an optional locale and options.
 - `./css`: the ambient `*.css` declaration for CSS module scripts,
   `import sheet from "./x.css" with { type: "css" }`, for a project's `types`.
+
+The primary interaction color is the hook `--interaction-color`, which the baseline and
+`meta.css` read with `--blue` as its fallback and no profile declares. Links, the focus outline,
+the caret, selected text, the hover border of fields and neutral buttons, and `accent-color`, which
+tints checkboxes, radios, ranges, and progress bars, all follow it. A page sets it on any element,
+in its own layer, and that subtree follows: `.danger-zone { --interaction-color: var(--red); }`.
 
 A package outside the foundation adds a profile as a built-in unit does: a sheet that declares
 its facet's tokens in one `:where([data-<attribute>="<name>"])` block inside that facet's layer,

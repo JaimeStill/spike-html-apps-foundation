@@ -68,9 +68,18 @@ interface Match {
 
 /** The store's well-known global key, shared by every copy of the module. */
 const KEY = Symbol.for("spike-html-apps-foundation.keys");
-const scope = globalThis as typeof globalThis & Record<symbol, Store | undefined>;
+const scope = globalThis as typeof globalThis & Record<symbol, Store | Element[] | undefined>;
 scope[KEY] ??= { registered: [], wait: 1500, listening: false };
-const store: Store = scope[KEY];
+const store = scope[KEY] as Store;
+
+/**
+ * The well-known global key of the modals focus has entered, oldest first, which every copy
+ * shares. The first copy to create the list tracks it.
+ */
+const MODALS = Symbol.for("spike-html-apps-foundation.keys.modals");
+const tracking = !scope[MODALS];
+scope[MODALS] ??= [];
+const entered = scope[MODALS] as Element[];
 
 // userAgentData is Chromium's and not yet in TypeScript's DOM types.
 const agent = navigator as Navigator & { userAgentData?: { platform: string } };
@@ -196,6 +205,53 @@ function focused(): Element | null {
   return el;
 }
 
+/**
+ * The node and its ancestors in the flat tree, nearest first: a slotted element's parent is its
+ * slot, and a shadow root's is its host.
+ */
+function* flat(node: Node | null): Generator<Node> {
+  for (let at = node; at;) {
+    yield at;
+    at = (at instanceof Element && at.assignedSlot) || at.parentNode;
+    if (at instanceof ShadowRoot) at = at.host;
+  }
+}
+
+/** Whether the node is inside the element in the flat tree. */
+const within = (element: Element, node: Node): boolean => flat(node).some((at) => at === element);
+
+/** The innermost open modal the node is inside in the flat tree, or null. */
+const modalOf = (node: Node | null): Element | null =>
+  flat(node).find((at): at is Element => at instanceof Element && at.matches(":modal")) ?? null;
+
+/** Moves the modal, if any, to the end of those focus entered, and drops those now closed. */
+function enter(modal: Element | null): void {
+  const open = entered.filter((el) => el !== modal && el.matches(":modal"));
+  entered.splice(0, entered.length, ...open, ...(modal ? [modal] : []));
+}
+
+/**
+ * Records the modal that focus entered. querySelectorAll() searches no shadow root, and nothing
+ * lists the top layer, but showModal() moves focus into the dialog, its first focusable element
+ * or itself, so focus enters every modal as it opens, at any depth of open shadow roots.
+ */
+function onfocusin(event: FocusEvent): void {
+  enter(modalOf(origin(event) as Node));
+}
+
+/**
+ * The open modals, topmost first: the one focus is in, then those focus entered, newest first,
+ * then the document's own. The page outside the topmost modal is inert, so focus is in it, unless
+ * its focused element was removed and focus fell to the body; a modal focus entered before keys
+ * loaded is recorded here, at the first press.
+ */
+function modals(): Element[] {
+  enter(modalOf(focused()));
+  const recorded = entered.toReversed();
+  const light = [...document.querySelectorAll(":modal")].filter((el) => !recorded.includes(el));
+  return [...recorded, ...light];
+}
+
 /** Whether the target is a form field or editable, where a key types. */
 function isField(el: EventTarget | null): boolean {
   return (
@@ -224,13 +280,17 @@ const isActiveElement = (el: HTMLElement): boolean =>
   !el.matches(":disabled") && !el.closest("[inert]") && el.checkVisibility();
 
 /**
- * The active bindings, first-wins order: elements in document order, then registered ones. An
- * open modal narrows them to its elements; `closed` is a dialog treated as closed.
+ * The active bindings, first-wins order: elements in document order, then registered ones. The
+ * topmost open modal, in the document or an open shadow root, narrows them to its elements,
+ * slotted ones included; `closed` is a dialog treated as closed.
  */
 function active(current: Settings, closed: Element | null = null): Active[] {
-  const modal = [...document.querySelectorAll(":modal")].find((el) => el !== closed);
+  const modal = modals().find((el) => el !== closed);
   const elements = [...document.querySelectorAll<HTMLElement>("[data-keys]")]
-    .filter((el) => (!modal || modal.contains(el)) && !closed?.contains(el) && isActiveElement(el))
+    .filter(
+      (el) =>
+        (!modal || within(modal, el)) && !(closed && within(closed, el)) && isActiveElement(el),
+    )
     .map((el) => elementBinding(el, current))
     .filter((binding) => binding !== null);
   if (modal) return elements;
@@ -300,7 +360,7 @@ const silent = (event: KeyboardEvent): boolean =>
 function release(event: KeyboardEvent): boolean {
   const field = focused();
   if (event.key !== "Escape" || passed(event) || field !== origin(event)) return false;
-  if (!isField(field) || document.querySelector(":modal")) return false;
+  if (!isField(field) || modals().length > 0) return false;
   (field as HTMLElement).blur();
   return true;
 }
@@ -478,3 +538,7 @@ if (!store.listening) {
   document.addEventListener("beforetoggle", onbeforetoggle, true);
   observe();
 }
+// The copy that created the modal list tracks it, even beside an older copy holding the listener.
+// focusin is composed, so the document sees it from an open shadow root; captured, so a listener
+// that stops it doesn't hide it.
+if (tracking) document.addEventListener("focusin", onfocusin, true);
