@@ -595,6 +595,72 @@ describe("keys: fields in open shadow roots", () => {
   });
 });
 
+// Each modal of keys-modal.html, as the paths to its dialog and to its field: in the document,
+// one shadow root deep in x-modal, and two in x-nest's own x-modal.
+const MODALS = [
+  { name: "light", dialog: ["light"], field: ["field"] },
+  { name: "one", dialog: ["one", "dialog"], field: ["one", "field"] },
+  { name: "two", dialog: ["two", "inner", "dialog"], field: ["two", "inner", "field"] },
+];
+
+describe("keys: modals in open shadow roots", () => {
+  test("while a modal one or two shadow roots deep is open, only its own bindings fire", async () => {
+    const page = await open("keys-modal.html");
+    await registerLogged(page, "/");
+    const expected: string[] = [];
+    for (const { name, dialog } of MODALS) {
+      await page.evaluate(`${deep(dialog)}.showModal()`);
+      // Out of the field showModal() focused, onto the slotted button.
+      await page.evaluate(`document.querySelector('[data-log="m ${name}"]').focus()`);
+      await press(page, "t");
+      await press(page, "/");
+      await pressHelp(page);
+      assert.equal(await isOpen(page, "help"), false, name);
+      // Its slotted button binds.
+      await press(page, "m");
+      await page.evaluate(`${deep(dialog)}.close()`);
+      await press(page, "t");
+      await press(page, "/");
+      expected.push(`m ${name}`, "t", "/");
+      assert.deepEqual(await log(page), expected, name);
+    }
+  });
+
+  test("with focus gone from the open modal to the body, the page's bindings stay quiet", async () => {
+    const page = await open("keys-modal.html");
+    await registerLogged(page, "/");
+    for (const { name, dialog, field } of MODALS) {
+      await page.evaluate(`${deep(dialog)}.showModal()`);
+      await page.evaluate(`${deep(field)}.focus()`);
+      await page.evaluate(`${deep(field)}.remove()`);
+      assert.equal(await active(page), "body", name);
+      await press(page, "t");
+      await press(page, "/");
+      assert.deepEqual(await log(page), [], name);
+      await page.evaluate(`${deep(dialog)}.close()`);
+    }
+    await press(page, "t");
+    assert.deepEqual(await log(page), ["t"]);
+  });
+
+  test("Escape in a field of a modal one or two shadow roots deep blurs nothing and it closes", async () => {
+    const page = await open("keys-modal.html");
+    // Added after keys's listener, it sees where focus is once keys has run.
+    await page.evaluate(`document.addEventListener("keydown", () => {
+      let el = document.activeElement;
+      while (el?.shadowRoot?.activeElement) el = el.shadowRoot.activeElement;
+      window.after = el;
+    })`);
+    for (const { name, dialog, field } of MODALS) {
+      await page.evaluate(`${deep(dialog)}.showModal()`);
+      await page.evaluate(`${deep(field)}.focus()`);
+      await pressEscape(page);
+      assert.equal(await page.evaluate(`window.after === ${deep(field)}`), true, name);
+      assert.equal(await page.evaluate(`${deep(dialog)}.open`), false, name);
+    }
+  });
+});
+
 describe("keys: extension and the store", () => {
   test("cancelling keys-fire stops the action", async () => {
     const page = await open();

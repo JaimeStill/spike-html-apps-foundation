@@ -6,6 +6,16 @@ follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), and the packag
 
 ## [Unreleased]
 
+### Fixed
+
+- The keys runtime sees a modal open in an open shadow root at any depth, as a component's modal
+  `<dialog>` is, and treats it as it treats one in the document: while it is open only the
+  bindings of elements inside it fire, slotted elements included, so the page's bindings and
+  `register()` bindings stay quiet and `?` no longer opens help over it, and Escape in a field
+  inside it is left to the dialog. Focus enters every modal as it opens, so keys records the
+  modal from each `focusin`'s composed path, and keeps it, even once focus falls to the body,
+  until it closes.
+
 ## [0.2.2] - 2026-10-31
 
 ### Fixed
