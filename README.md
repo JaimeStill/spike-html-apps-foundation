@@ -72,7 +72,7 @@ its fallback and declared by no profile. Where `--interaction-color` marks what 
 `--accent-color` marks what is current, active, or in progress: emphasis that reports state rather
 than inviting interaction. In the baseline, native `progress` follows it. A page sets it on any
 element in its own layer, and per palette if it wants:
-`:where([data-palette="primer"]) { --accent-color: var(--purple); }`. The hook shares its name with
+`:where([data-palette="primer"]) { --accent-color: var(--cyan); }`. The hook shares its name with
 the CSS property: `accent-color` follows `--interaction-color` on every element except `progress`,
 where it follows `--accent-color`.
 
