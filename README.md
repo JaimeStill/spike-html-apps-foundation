@@ -61,6 +61,13 @@ the modules by their `.js` subpaths. The lean entry, `page.css`, carries the def
 - `./css`: the ambient `*.css` declaration for CSS module scripts,
   `import sheet from "./x.css" with { type: "css" }`, for a project's `types`.
 
+The accent is the hook `--interaction-color`, which the baseline reads with `--blue` as its
+fallback and no profile declares. Links, the focus outline, the caret, selected text, the hover
+border of fields and neutral buttons, and `accent-color`, which tints checkboxes, radios, ranges,
+and progress bars, all follow it. A page sets it on any element, in its own layer, and that subtree
+follows: `.danger-zone { --interaction-color: var(--red); }`. A profile sets only its color tokens;
+the foundation has no other accent or role token.
+
 A package outside the foundation adds a profile as a built-in unit does: a sheet that declares
 its facet's tokens in one `:where([data-<attribute>="<name>"])` block inside that facet's layer,
 `foundation.tokens.<facet>`, and a registration module that calls `register(facet, name)` from

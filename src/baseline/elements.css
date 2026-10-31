@@ -360,8 +360,9 @@
   }
 
   /* Forms. Text fields, selects and text areas share one outlined look; checkboxes, radios,
-     ranges, color wells, progress and meter keep their native look, tinted by the accent color
-     every element sets. */
+     ranges, color wells, progress and meter keep their native look. Checkboxes, radios, ranges
+     and progress take the accent color every element sets; accent-color doesn't reach a color
+     well or meter. */
 
   :where(
     input:not(

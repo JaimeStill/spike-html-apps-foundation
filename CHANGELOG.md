@@ -16,6 +16,12 @@ follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), and the packag
   modal from each `focusin`'s composed path, and keeps it, even once focus falls to the body,
   until it closes.
 
+### Changed
+
+- The README names `--interaction-color` as the foundation's accent: what follows it, how a page
+  sets it, and that the foundation has no other accent or role token. The baseline's forms comment
+  no longer says `accent-color` tints `meter`, which the property doesn't reach.
+
 ## [0.2.2] - 2026-10-31
 
 ### Fixed
