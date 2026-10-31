@@ -11,8 +11,15 @@ follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), and the packag
 - A second color hook, `--accent-color`, beside `--interaction-color` and by the same mechanism:
   the baseline reads it as `var(--accent-color, var(--magenta))` and no profile declares it. It
   marks what is current, active, or in progress, where `--interaction-color` marks what you can
-  act on. Native `progress` follows it: its `accent-color` is now the palette's `--magenta` by
-  default, where it was `--blue`; checkboxes, radios, and ranges stay on `--interaction-color`.
+  act on. Native `progress` follows it; checkboxes, radios, and ranges stay on
+  `--interaction-color`.
+
+### Changed
+
+- Progress bars are magenta where they were blue, on every page, in every palette and scheme:
+  native `progress` takes its `accent-color` from `--accent-color`, by default the palette's
+  `--magenta`, in place of `--interaction-color`. A page that sets `--interaction-color` no longer
+  recolors its progress bars with it; it sets `--accent-color` for them.
 
 ## [0.2.3] - 2026-10-31
 

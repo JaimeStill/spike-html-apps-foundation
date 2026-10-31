@@ -23,8 +23,8 @@
  * Every rendered HTML element on the tokens, with no classes: sections and headings, grouping
  * and text-level elements, edits, embedded content, tables, forms, details and dialog, and the
  * ::file-selector-button, ::marker, ::placeholder and ::backdrop pseudo-elements. An element
- * whose native look already sits on the tokens, through the body's font and color and the accent
- * color every element sets, has no rule of its own.
+ * whose native look already sits on the tokens, through the body's font and color and the
+ * accent-color every element sets, has no rule of its own.
  *
  * Two limits hold for every rule here:
  *
