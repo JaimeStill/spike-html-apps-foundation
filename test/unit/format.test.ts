@@ -18,8 +18,8 @@ const UTC = { timeZone: "UTC" };
 
 describe("formatBytes", () => {
   test("picks the largest base-1000 unit that keeps the value at 1 or more", () => {
-    assert.equal(formatBytes(0, LOCALE), "0 byte");
-    assert.equal(formatBytes(999, LOCALE), "999 byte");
+    assert.equal(formatBytes(0, LOCALE), "0 bytes");
+    assert.equal(formatBytes(999, LOCALE), "999 bytes");
     assert.equal(formatBytes(1000, LOCALE), "1 kB");
     assert.equal(formatBytes(1500, LOCALE), "1.5 kB");
     assert.equal(formatBytes(2.5e6, LOCALE), "2.5 MB");
@@ -34,14 +34,37 @@ describe("formatBytes", () => {
     assert.equal(formatBytes(-1500, LOCALE), "-1.5 kB");
   });
 
+  test("words the byte unit in full, so Intl pluralizes it", () => {
+    assert.equal(formatBytes(0, LOCALE), "0 bytes");
+    assert.equal(formatBytes(1, LOCALE), "1 byte");
+    assert.equal(formatBytes(13, LOCALE), "13 bytes");
+    assert.equal(formatBytes(999, LOCALE), "999 bytes");
+    // The units above it stay short.
+    assert.equal(formatBytes(1000, LOCALE), "1 kB");
+  });
+
+  test("leaves the byte unit's plural and its word to the locale", () => {
+    // French's short byte unit is "o", whatever the count; its long one pluralizes. French sets
+    // the byte unit off by a no-break space and the short ones by a narrow no-break space.
+    assert.equal(formatBytes(1, "fr"), "1\u00a0octet");
+    assert.equal(formatBytes(13, "fr"), "13\u00a0octets");
+    assert.equal(formatBytes(1500, "fr"), "1,5\u202fko");
+  });
+
+  test("keeps a caller's unitDisplay for the byte unit too", () => {
+    assert.equal(formatBytes(13, LOCALE, { unitDisplay: "short" }), "13 byte");
+    assert.equal(formatBytes(13, LOCALE, { unitDisplay: "narrow" }), "13B");
+  });
+
   // An independent byte formatter, stepping by log10 to at most gigabytes at one fraction digit,
-  // for the counts it handles: none past a gigabyte's unit, none negative.
+  // the byte unit long and the others short, for the counts it handles: none past a gigabyte's
+  // unit, none negative.
   const entryUnits = ["byte", "kilobyte", "megabyte", "gigabyte"].map(
     (unit) =>
       new Intl.NumberFormat(LOCALE, {
         style: "unit",
         unit,
-        unitDisplay: "short",
+        unitDisplay: unit === "byte" ? "long" : "short",
         maximumFractionDigits: 1,
       }),
   );

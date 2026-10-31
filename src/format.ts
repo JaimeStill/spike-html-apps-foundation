@@ -25,8 +25,11 @@ export function formatBytes(
     options?.minimumFractionDigits === undefined && options?.maximumFractionDigits === undefined
       ? { maximumFractionDigits: 1 }
       : {};
+  // The byte unit long by default, so Intl words and pluralizes it ("1 byte", "13 bytes"): en-US's
+  // short byte is "byte" at every count. The units above it stay short ("1.5 kB"). A caller's own
+  // unitDisplay wins at every unit.
   return new Intl.NumberFormat(locale, {
-    unitDisplay: "short",
+    unitDisplay: step === 0 ? "long" : "short",
     ...fraction,
     ...options,
     style: "unit",

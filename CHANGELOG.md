@@ -6,6 +6,13 @@ follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), and the packag
 
 ## [Unreleased]
 
+### Fixed
+
+- `formatBytes` words a count under 1 kB with the byte unit's long form, which Intl pluralizes and
+  localizes, so en-US reads "0 bytes", "1 byte", and "13 bytes", not "0 byte" and "13 byte". The
+  units from kB up print as before ("1 kB", "1.5 MB"), and a caller's own `unitDisplay` still sets
+  every unit, bytes included.
+
 ## [0.2.1] - 2026-10-30
 
 ### Fixed
