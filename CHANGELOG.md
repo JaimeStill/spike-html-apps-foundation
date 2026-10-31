@@ -6,6 +6,8 @@ follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), and the packag
 
 ## [Unreleased]
 
+## [0.2.3] - 2026-10-31
+
 ### Fixed
 
 - The keys runtime sees a modal open in an open shadow root at any depth, as a component's modal
@@ -20,8 +22,8 @@ follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), and the packag
 
 ### Changed
 
-- The README names `--interaction-color` as the foundation's accent: what follows it, how a page
-  sets it, and that the foundation has no other accent or role token. The baseline's forms comment
+- The README documents `--interaction-color`, the primary interaction color: what follows it and
+  how a page sets it. The baseline's forms comment
   no longer says `accent-color` tints `meter`, which the property doesn't reach.
 
 ## [0.2.2] - 2026-10-31
@@ -105,7 +107,8 @@ follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), and the packag
 - The release by tag: `v<version>`, whose tree is the pack, with the tarball on its GitHub
   release.
 
-[Unreleased]: https://github.com/JaimeStill/spike-html-apps-foundation/compare/v0.2.2...HEAD
+[Unreleased]: https://github.com/JaimeStill/spike-html-apps-foundation/compare/v0.2.3...HEAD
+[0.2.3]: https://github.com/JaimeStill/spike-html-apps-foundation/compare/v0.2.2...v0.2.3
 [0.2.2]: https://github.com/JaimeStill/spike-html-apps-foundation/compare/v0.2.1...v0.2.2
 [0.2.1]: https://github.com/JaimeStill/spike-html-apps-foundation/compare/v0.2.0...v0.2.1
 [0.2.0]: https://github.com/JaimeStill/spike-html-apps-foundation/compare/v0.1.0...v0.2.0
