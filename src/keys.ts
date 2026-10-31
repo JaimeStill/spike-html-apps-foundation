@@ -206,40 +206,50 @@ function focused(): Element | null {
 }
 
 /**
- * Records the modal that focus entered, from the focusin's composed path. querySelectorAll()
- * searches no shadow root, and nothing lists the top layer, but showModal() moves focus into the
- * dialog, its first focusable element or itself, and the page outside it is inert, so focus
- * enters every modal as it opens, at any depth of open shadow roots. The list keeps a modal that
- * focus has left for the body, as when its focused element is removed, until it closes.
+ * The node and its ancestors in the flat tree, nearest first: a slotted element's parent is its
+ * slot, and a shadow root's is its host.
  */
-function onfocusin(event: FocusEvent): void {
-  const modal = event
-    .composedPath()
-    .find((node): node is Element => node instanceof Element && node.matches(":modal"));
+function* flat(node: Node | null): Generator<Node> {
+  for (let at = node; at;) {
+    yield at;
+    at = (at instanceof Element && at.assignedSlot) || at.parentNode;
+    if (at instanceof ShadowRoot) at = at.host;
+  }
+}
+
+/** Whether the node is inside the element in the flat tree. */
+const within = (element: Element, node: Node): boolean => flat(node).some((at) => at === element);
+
+/** The innermost open modal the node is inside in the flat tree, or null. */
+const modalOf = (node: Node | null): Element | null =>
+  flat(node).find((at): at is Element => at instanceof Element && at.matches(":modal")) ?? null;
+
+/** Moves the modal, if any, to the end of those focus entered, and drops those now closed. */
+function enter(modal: Element | null): void {
   const open = entered.filter((el) => el !== modal && el.matches(":modal"));
   entered.splice(0, entered.length, ...open, ...(modal ? [modal] : []));
 }
 
 /**
- * The open modals: the document's own in document order, then those in open shadow roots that
- * focus entered, oldest first.
+ * Records the modal that focus entered. querySelectorAll() searches no shadow root, and nothing
+ * lists the top layer, but showModal() moves focus into the dialog, its first focusable element
+ * or itself, so focus enters every modal as it opens, at any depth of open shadow roots.
  */
-function modals(): Element[] {
-  const light = [...document.querySelectorAll(":modal")];
-  return [...light, ...entered.filter((el) => !light.includes(el) && el.matches(":modal"))];
+function onfocusin(event: FocusEvent): void {
+  enter(modalOf(origin(event) as Node));
 }
 
 /**
- * Whether the node is inside the element in the flat tree: a slotted element counts as inside
- * the slot's shadow tree, and a shadow root's contents as inside its host.
+ * The open modals, topmost first: the one focus is in, then those focus entered, newest first,
+ * then the document's own. The page outside the topmost modal is inert, so focus is in it, unless
+ * its focused element was removed and focus fell to the body; a modal focus entered before keys
+ * loaded is recorded here, at the first press.
  */
-function within(element: Element, node: Node): boolean {
-  for (let at: Node | null = node; at;) {
-    if (at === element) return true;
-    at = (at instanceof Element && at.assignedSlot) || at.parentNode;
-    if (at instanceof ShadowRoot) at = at.host;
-  }
-  return false;
+function modals(): Element[] {
+  enter(modalOf(focused()));
+  const recorded = entered.toReversed();
+  const light = [...document.querySelectorAll(":modal")].filter((el) => !recorded.includes(el));
+  return [...recorded, ...light];
 }
 
 /** Whether the target is a form field or editable, where a key types. */
@@ -270,9 +280,9 @@ const isActiveElement = (el: HTMLElement): boolean =>
   !el.matches(":disabled") && !el.closest("[inert]") && el.checkVisibility();
 
 /**
- * The active bindings, first-wins order: elements in document order, then registered ones. An
- * open modal, in the document or an open shadow root, narrows them to its elements, slotted ones
- * included; `closed` is a dialog treated as closed.
+ * The active bindings, first-wins order: elements in document order, then registered ones. The
+ * topmost open modal, in the document or an open shadow root, narrows them to its elements,
+ * slotted ones included; `closed` is a dialog treated as closed.
  */
 function active(current: Settings, closed: Element | null = null): Active[] {
   const modal = modals().find((el) => el !== closed);

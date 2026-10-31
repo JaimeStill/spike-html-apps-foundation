@@ -603,6 +603,17 @@ const MODALS = [
   { name: "two", dialog: ["two", "inner", "dialog"], field: ["two", "inner", "field"] },
 ];
 
+/**
+ * Records, as window.after, where focus is once keys has run on each keydown: added after keys's
+ * listener, it runs after it.
+ */
+const followFocus = (page: Page) =>
+  page.evaluate(`document.addEventListener("keydown", () => {
+    let el = document.activeElement;
+    while (el?.shadowRoot?.activeElement) el = el.shadowRoot.activeElement;
+    window.after = el;
+  })`);
+
 describe("keys: modals in open shadow roots", () => {
   test("while a modal one or two shadow roots deep is open, only its own bindings fire", async () => {
     const page = await open("keys-modal.html");
@@ -645,12 +656,7 @@ describe("keys: modals in open shadow roots", () => {
 
   test("Escape in a field of a modal one or two shadow roots deep blurs nothing and it closes", async () => {
     const page = await open("keys-modal.html");
-    // Added after keys's listener, it sees where focus is once keys has run.
-    await page.evaluate(`document.addEventListener("keydown", () => {
-      let el = document.activeElement;
-      while (el?.shadowRoot?.activeElement) el = el.shadowRoot.activeElement;
-      window.after = el;
-    })`);
+    await followFocus(page);
     for (const { name, dialog, field } of MODALS) {
       await page.evaluate(`${deep(dialog)}.showModal()`);
       await page.evaluate(`${deep(field)}.focus()`);
@@ -658,6 +664,51 @@ describe("keys: modals in open shadow roots", () => {
       assert.equal(await page.evaluate(`window.after === ${deep(field)}`), true, name);
       assert.equal(await page.evaluate(`${deep(dialog)}.open`), false, name);
     }
+  });
+
+  test("with a modal open over another, only the topmost one's bindings fire", async () => {
+    const page = await open("keys-modal.html");
+    await page.evaluate(`document.getElementById("host").showModal()`);
+    // The host's own x-modal, then the document's light dialog, each opened over the host.
+    for (const { name, dialog } of [
+      { name: "over", dialog: ["over", "dialog"] },
+      { name: "light", dialog: ["light"] },
+    ]) {
+      await page.evaluate(`${deep(dialog)}.showModal()`);
+      await page.evaluate(`document.querySelector('[data-log="m ${name}"]').focus()`);
+      await press(page, "o");
+      await press(page, "t");
+      await press(page, "m");
+      await page.evaluate(`${deep(dialog)}.close()`);
+      await page.evaluate(`document.querySelector('[data-log="o"]').focus()`);
+      await press(page, "o");
+    }
+    assert.deepEqual(await log(page), ["m over", "o", "m light", "o"]);
+  });
+});
+
+describe("keys: a modal open before keys loads", () => {
+  test("while it is open, only its own bindings fire, and the page's once it closes", async () => {
+    const page = await open("keys-modal-early.html");
+    await registerLogged(page, "/");
+    assert.equal(await page.evaluate(`${deep(["early", "dialog"])}.open`), true);
+    await press(page, "t");
+    await press(page, "/");
+    await pressHelp(page);
+    assert.equal(await isOpen(page, "help"), false);
+    await press(page, "m");
+    await page.evaluate(`${deep(["early", "dialog"])}.close()`);
+    await press(page, "t");
+    assert.deepEqual(await log(page), ["m", "t"]);
+  });
+
+  test("Escape in its field, focused before keys loaded, blurs nothing and it closes", async () => {
+    const page = await open("keys-modal-early.html?field");
+    assert.equal(await isFocused(page, ["early", "field"]), true);
+    await followFocus(page);
+    await pressEscape(page);
+    assert.equal(await page.evaluate(`window.after === ${deep(["early", "field"])}`), true);
+    assert.equal(await page.evaluate(`${deep(["early", "dialog"])}.open`), false);
   });
 });
 

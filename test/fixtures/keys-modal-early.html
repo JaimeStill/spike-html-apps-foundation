@@ -1,0 +1,55 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <title>keys early modal fixture</title>
+    <link rel="stylesheet" href="../../dist/page.css" />
+    <script>
+      // x-modal: a dialog in an open shadow root, its button slotted, that opens itself as it
+      // connects, as a component open in markup does. Defined by a classic script, it opens while
+      // the page parses, before keys loads; with ?field its dialog holds a field, which takes focus.
+      const field = new URLSearchParams(location.search).has("field");
+      customElements.define(
+        "x-modal",
+        class extends HTMLElement {
+          constructor() {
+            super();
+            this.attachShadow({ mode: "open" }).innerHTML = `
+              <dialog id="dialog">
+                ${field ? '<label>Field <input type="text" id="field" /></label>' : ""}
+                <slot></slot>
+              </dialog>`;
+          }
+          connectedCallback() {
+            this.shadowRoot.getElementById("dialog").showModal();
+          }
+        },
+      );
+    </script>
+    <script type="module" src="../../dist/keys.js"></script>
+  </head>
+  <body>
+    <h1>keys early modal fixture</h1>
+    <p>A modal dialog in x-modal's open shadow root opens as the page parses, before keys loads, and focus is already inside it. While it is open, only its M fires: not T or ?, which opens help. With ?field, Escape in its field leaves the field to the dialog, which closes.</p>
+    <p>
+      <button type="button" commandfor="help" command="show-modal" data-keys="?">Help <kbd>?</kbd></button>
+      <button type="button" data-keys="t" data-log="t">Theme <kbd>T</kbd></button>
+    </p>
+    <x-modal id="early">
+      <button type="button" data-keys="m" data-log="m">Inside <kbd>M</kbd></button>
+    </x-modal>
+    <dialog id="help" aria-labelledby="help-title">
+      <h2 id="help-title">Keyboard shortcuts</h2>
+      <div data-keys-list></div>
+      <button type="button" commandfor="help" command="close" data-keys="?">Close <kbd>?</kbd></button>
+    </dialog>
+    <script type="module">
+      // log records each action a binding runs, in order, for the tests and the reader.
+      window.log = [];
+      document.addEventListener("click", (event) => {
+        const name = event.target.closest?.("[data-log]")?.dataset.log;
+        if (name) window.log.push(name);
+      });
+    </script>
+  </body>
+</html>

@@ -13,8 +13,10 @@ follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), and the packag
   bindings of elements inside it fire, slotted elements included, so the page's bindings and
   `register()` bindings stay quiet and `?` no longer opens help over it, and Escape in a field
   inside it is left to the dialog. Focus enters every modal as it opens, so keys records the
-  modal from each `focusin`'s composed path, and keeps it, even once focus falls to the body,
-  until it closes.
+  modal from each `focusin`'s composed path, and from where focus is at each press, which finds
+  one opened before keys loaded, and keeps it, even once focus falls to the body, until it closes.
+- With one modal open over another, keys narrows the bindings to the topmost, the one focus is
+  in, where it took the first in document order.
 
 ### Changed
 

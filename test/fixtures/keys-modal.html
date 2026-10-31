@@ -8,11 +8,17 @@
   </head>
   <body>
     <h1>keys shadow-root modal fixture</h1>
-    <p>Three modal dialogs, each holding a field and a slotted M button: one in the document, one in x-modal's open shadow root, and one in the x-modal inside x-nest's own, two shadow roots deep. While any is open, only its M fires: not T, /, or ?, which opens help. Escape in its field leaves the field to the dialog, which closes.</p>
+    <p>Three modal dialogs, each holding a field and a slotted M button: one in the document, one in x-modal's open shadow root, and one in the x-modal inside x-nest's own, two shadow roots deep. While any is open, only its M fires: not T, /, or ?, which opens help. Escape in its field leaves the field to the dialog, which closes. The host dialog, first in the document, holds an O button and an x-modal: with the x-modal or the document's dialog open over it, only the topmost modal's M fires, and O fires again once it closes.</p>
     <p>
       <button type="button" commandfor="help" command="show-modal" data-keys="?">Help <kbd>?</kbd></button>
       <button type="button" data-keys="t" data-log="t">Theme <kbd>T</kbd></button>
     </p>
+    <dialog id="host">
+      <button type="button" data-keys="o" data-log="o">Host <kbd>O</kbd></button>
+      <x-modal id="over">
+        <button type="button" data-keys="m" data-log="m over">Over <kbd>M</kbd></button>
+      </x-modal>
+    </dialog>
     <dialog id="light">
       <label>Field <input type="text" id="field" /></label>
       <button type="button" data-keys="m" data-log="m light">Inside <kbd>M</kbd></button>
