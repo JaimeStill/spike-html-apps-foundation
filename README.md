@@ -61,8 +61,8 @@ the modules by their `.js` subpaths. The lean entry, `page.css`, carries the def
 - `./css`: the ambient `*.css` declaration for CSS module scripts,
   `import sheet from "./x.css" with { type: "css" }`, for a project's `types`.
 
-The accent is the hook `--interaction-color`, which the baseline reads with `--blue` as its
-fallback and no profile declares. Links, the focus outline, the caret, selected text, the hover
+The accent is the hook `--interaction-color`, which the baseline and `meta.css` read with `--blue`
+as its fallback and no profile declares. Links, the focus outline, the caret, selected text, the hover
 border of fields and neutral buttons, and `accent-color`, which tints checkboxes, radios, ranges,
 and progress bars, all follow it. A page sets it on any element, in its own layer, and that subtree
 follows: `.danger-zone { --interaction-color: var(--red); }`. A profile sets only its color tokens;
