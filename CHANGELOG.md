@@ -6,6 +6,15 @@ follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), and the packag
 
 ## [Unreleased]
 
+## [0.2.2] - 2026-10-31
+
+### Fixed
+
+- `formatBytes` words a count under 1 kB with the byte unit's long form, which Intl pluralizes and
+  localizes, so en-US reads "0 bytes", "1 byte", and "13 bytes", not "0 byte" and "13 byte". The
+  units from kB up print as before ("1 kB", "1.5 MB"), and a caller's own `unitDisplay` still sets
+  every unit, bytes included.
+
 ## [0.2.1] - 2026-10-30
 
 ### Fixed
@@ -78,7 +87,8 @@ follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), and the packag
 - The release by tag: `v<version>`, whose tree is the pack, with the tarball on its GitHub
   release.
 
-[Unreleased]: https://github.com/JaimeStill/spike-html-apps-foundation/compare/v0.2.1...HEAD
+[Unreleased]: https://github.com/JaimeStill/spike-html-apps-foundation/compare/v0.2.2...HEAD
+[0.2.2]: https://github.com/JaimeStill/spike-html-apps-foundation/compare/v0.2.1...v0.2.2
 [0.2.1]: https://github.com/JaimeStill/spike-html-apps-foundation/compare/v0.2.0...v0.2.1
 [0.2.0]: https://github.com/JaimeStill/spike-html-apps-foundation/compare/v0.1.0...v0.2.0
 [0.1.0]: https://github.com/JaimeStill/spike-html-apps-foundation/releases/tag/v0.1.0
