@@ -13,9 +13,9 @@ Each release is a tag, `v<version>`, whose tree is the package as `pnpm pack` bu
 `package.json`, this README, the LICENSE, and `dist/`. Install it by the tag:
 
 ```
-npm install --allow-git=root github:JaimeStill/spike-html-apps-foundation#v0.2.3
-pnpm add github:JaimeStill/spike-html-apps-foundation#v0.2.3
-bun add github:JaimeStill/spike-html-apps-foundation#v0.2.3
+npm install --allow-git=root github:JaimeStill/spike-html-apps-foundation#v0.3.0
+pnpm add github:JaimeStill/spike-html-apps-foundation#v0.3.0
+bun add github:JaimeStill/spike-html-apps-foundation#v0.3.0
 ```
 
 npm 12 refuses git dependencies unless `--allow-git` allows them; `root` allows the ones the
@@ -64,8 +64,17 @@ the modules by their `.js` subpaths. The lean entry, `page.css`, carries the def
 The primary interaction color is the hook `--interaction-color`, which the baseline and
 `meta.css` read with `--blue` as its fallback and no profile declares. Links, the focus outline,
 the caret, selected text, the hover border of fields and neutral buttons, and `accent-color`, which
-tints checkboxes, radios, ranges, and progress bars, all follow it. A page sets it on any element,
-in its own layer, and that subtree follows: `.danger-zone { --interaction-color: var(--red); }`.
+tints checkboxes, radios, and ranges, all follow it. A page sets it on any element, in its own
+layer, and that subtree follows: `.danger-zone { --interaction-color: var(--red); }`.
+
+Beside it, the accent color is the hook `--accent-color`, which the baseline reads the same way,
+with `--magenta` as its fallback, and no profile declares. Where `--interaction-color` marks what
+you can act on, `--accent-color` marks what is current, active, or in progress: emphasis that
+reports state rather than inviting interaction. In the baseline, native `progress` follows it. A
+page sets it on any element in its own layer, and per palette if it wants:
+`:where([data-palette="primer"]) { --accent-color: var(--cyan); }`. The hook shares its name with
+the CSS property: `accent-color` follows `--interaction-color` on every element except `progress`,
+where it follows `--accent-color`.
 
 A package outside the foundation adds a profile as a built-in unit does: a sheet that declares
 its facet's tokens in one `:where([data-<attribute>="<name>"])` block inside that facet's layer,
@@ -88,10 +97,11 @@ mise run currency     # report every tool, package, action pin, and tooling tag 
 
 The demo pages, in `demo/`, are `tools.html` (every tool class), `profiles.html` (the tools page
 switched through every profile), `theme.html` (the theme menu on `page-full.css`), `unit.html`
-(`page.css` with the Primer unit), `keys.html`, and `format.html`. Page layout belongs to the
+(`page.css` with the Primer unit), `keys.html`, `format.html`, and `hooks.html` (the two color
+hooks, at their fallbacks and overridden). Page layout belongs to the
 consumer, so each page links `demo.css`, a `demo` layer of its own that lays out the column and
-its sections. `mise run screenshots` renders the tools page, keys help, and the theme menu, wide
-and narrow, light and dark, on `page-full.css`. It runs the `spike-html-apps-screenshots` bin of
+its sections. `mise run screenshots` renders the tools page, keys help, the theme menu, wide
+and narrow, and the hooks page, light and dark, on `page-full.css`. It runs the `spike-html-apps-screenshots` bin of
 [spike-html-apps-tooling](https://github.com/JaimeStill/spike-html-apps-tooling), the
 devDependency the browser tier's driver and server also come from, over the capture description
 in `scripts/screenshots.config.ts`, and passes its arguments on. With none it captures the default

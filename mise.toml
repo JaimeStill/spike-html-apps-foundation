@@ -86,13 +86,13 @@ description = "Install the pins and node_modules; reads the network"
 run = ["mise install", "pnpm install --frozen-lockfile"]
 
 [tasks.demo]
-description = "Serve the tools, profiles, theme, unit, keys, and format demo pages, on dist/, on the loopback address"
+description = "Serve the tools, profiles, theme, unit, keys, format, and hooks demo pages, on dist/, on the loopback address"
 depends = ["build"]
 run = "node scripts/demo.js"
 
 # Never a dependency of check: a reviewer's look at the pages, not a test.
 [tasks.screenshots]
-description = "Capture the tools page, keys help, and the theme menu light and dark, inline in kitty: at the defaults, or --palette/--space/--type <name>, or --all for every profile; --page <name> (repeatable) and --scheme light|dark narrow it; --output directory|browser and --dir <path> choose where they go; --keep leaves the captures"
+description = "Capture the tools page, keys help, the theme menu, and the hooks page light and dark, inline in kitty: at the defaults, or --palette/--space/--type <name>, or --all for every profile; --page <name> (repeatable) and --scheme light|dark narrow it; --output directory|browser and --dir <path> choose where they go; --keep leaves the captures"
 depends = ["preflight browser", "build"]
 # The tooling's bin over the capture description; the task's arguments follow it, with or without
 # a leading --.

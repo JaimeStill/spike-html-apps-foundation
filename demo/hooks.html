@@ -1,0 +1,127 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>foundation hooks</title>
+    <!-- The baseline's two color hooks from dist/: --interaction-color, what you can act on, and
+         --accent-color, what is current, active, or in progress, each at its fallback and each
+         set on a subtree of its own. The field's data-focus-start sits on the range before it:
+         mise run screenshots focuses the range and presses Tab, so the field shows the keyboard's
+         focus outline and, as Tab selects a field's text, the selection's mix. The overrides are
+         style attributes, as a consumer may set a hook. -->
+    <link rel="stylesheet" href="../dist/page.css" />
+    <link rel="stylesheet" href="demo.css" />
+  </head>
+  <body>
+    <main>
+      <h1>Foundation hooks</h1>
+      <p>
+        The baseline's two color hooks, which no profile declares: each falls back to a hue of the
+        palette, and a consumer sets one on any subtree.
+      </p>
+
+      <section id="interaction">
+        <h2>Interaction: <code>--interaction-color</code></h2>
+        <p>
+          What you can act on, by default <code>--blue</code>: links, checkboxes, radios, ranges,
+          the focus outline, the caret, and selected text.
+        </p>
+        <p>
+          <a href="#interaction">A link</a>
+          <label><input type="checkbox" checked /> A checkbox</label>
+          <label><input type="radio" name="interaction" checked /> One radio</label>
+          <label><input type="radio" name="interaction" /> Another</label>
+        </p>
+        <p>
+          <label>A range <input type="range" value="60" data-focus-start /></label>
+        </p>
+        <p class="field">
+          <label for="focused">A focused field, its text selected</label>
+          <input id="focused" class="field-grow" type="text" value="Reached by the keyboard" />
+        </p>
+      </section>
+
+      <section id="accent">
+        <h2>Accent: <code>--accent-color</code></h2>
+        <p>
+          What is current, active, or in progress, by default <code>--magenta</code>: native
+          <code>progress</code>, at a value and indeterminate.
+        </p>
+        <p>
+          <label>At 40% <progress value="40" max="100">40%</progress></label>
+          <label>Indeterminate <progress>Working</progress></label>
+        </p>
+      </section>
+
+      <section id="overrides">
+        <h2>Overrides</h2>
+        <p>
+          Each row sets one hook on its own subtree, and only that hook's elements follow: the
+          accent on <code>progress</code> alone, the interaction color on everything else.
+        </p>
+        <div class="scroll-x">
+          <table class="table-full">
+            <caption>
+              The same elements under each hook
+            </caption>
+            <thead>
+              <tr>
+                <th scope="col">Subtree</th>
+                <th scope="col">Link</th>
+                <th scope="col">Checkbox</th>
+                <th scope="col">Radios</th>
+                <th scope="col">Range</th>
+                <th scope="col">Progress</th>
+                <th scope="col">Indeterminate</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <th scope="row">No hook set</th>
+                <td><a href="#overrides">A link</a></td>
+                <td><input type="checkbox" checked aria-label="Checkbox, no hook set" /></td>
+                <td>
+                  <input type="radio" name="plain" checked aria-label="One radio, no hook set" />
+                  <input type="radio" name="plain" aria-label="Another radio, no hook set" />
+                </td>
+                <td><input type="range" value="60" aria-label="Range, no hook set" /></td>
+                <td><progress value="40" max="100">40%</progress></td>
+                <td><progress>Working</progress></td>
+              </tr>
+              <tr style="--accent-color: var(--cyan)">
+                <th scope="row"><code>--accent-color: var(--cyan)</code></th>
+                <td><a href="#overrides">A link</a></td>
+                <td><input type="checkbox" checked aria-label="Checkbox, accent set" /></td>
+                <td>
+                  <input type="radio" name="accent" checked aria-label="One radio, accent set" />
+                  <input type="radio" name="accent" aria-label="Another radio, accent set" />
+                </td>
+                <td><input type="range" value="60" aria-label="Range, accent set" /></td>
+                <td><progress value="40" max="100">40%</progress></td>
+                <td><progress>Working</progress></td>
+              </tr>
+              <tr style="--interaction-color: var(--red)">
+                <th scope="row"><code>--interaction-color: var(--red)</code></th>
+                <td><a href="#overrides">A link</a></td>
+                <td><input type="checkbox" checked aria-label="Checkbox, interaction set" /></td>
+                <td>
+                  <input
+                    type="radio"
+                    name="interacting"
+                    checked
+                    aria-label="One radio, interaction set"
+                  />
+                  <input type="radio" name="interacting" aria-label="Another radio, interaction set" />
+                </td>
+                <td><input type="range" value="60" aria-label="Range, interaction set" /></td>
+                <td><progress value="40" max="100">40%</progress></td>
+                <td><progress>Working</progress></td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </section>
+    </main>
+  </body>
+</html>

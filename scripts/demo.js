@@ -7,7 +7,7 @@ import { join } from "node:path";
 import { serve } from "@jaimestill/spike-html-apps-tooling/server.js";
 
 const server = await serve({ root: join(import.meta.dirname, "..") });
-for (const page of ["tools", "profiles", "theme", "unit", "keys", "format"]) {
+for (const page of ["tools", "profiles", "theme", "unit", "keys", "format", "hooks"]) {
   console.log(`${server.origin}/demo/${page}.html`);
 }
 process.once("SIGINT", async () => {

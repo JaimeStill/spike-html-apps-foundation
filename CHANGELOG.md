@@ -6,6 +6,23 @@ follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), and the packag
 
 ## [Unreleased]
 
+## [0.3.0] - 2026-10-31
+
+### Added
+
+- A second color hook, `--accent-color`, beside `--interaction-color` and by the same mechanism:
+  the baseline reads it as `var(--accent-color, var(--magenta))` and no profile declares it. It
+  marks what is current, active, or in progress, where `--interaction-color` marks what you can
+  act on. Native `progress` follows it; checkboxes, radios, and ranges stay on
+  `--interaction-color`.
+
+### Changed
+
+- Progress bars are magenta where they were blue, on every page, in every palette and scheme:
+  native `progress` takes its `accent-color` from `--accent-color`, by default the palette's
+  `--magenta`, in place of `--interaction-color`. A page that sets `--interaction-color` no longer
+  recolors its progress bars with it; it sets `--accent-color` for them.
+
 ## [0.2.3] - 2026-10-31
 
 ### Fixed
@@ -107,7 +124,8 @@ follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), and the packag
 - The release by tag: `v<version>`, whose tree is the pack, with the tarball on its GitHub
   release.
 
-[Unreleased]: https://github.com/JaimeStill/spike-html-apps-foundation/compare/v0.2.3...HEAD
+[Unreleased]: https://github.com/JaimeStill/spike-html-apps-foundation/compare/v0.3.0...HEAD
+[0.3.0]: https://github.com/JaimeStill/spike-html-apps-foundation/compare/v0.2.3...v0.3.0
 [0.2.3]: https://github.com/JaimeStill/spike-html-apps-foundation/compare/v0.2.2...v0.2.3
 [0.2.2]: https://github.com/JaimeStill/spike-html-apps-foundation/compare/v0.2.1...v0.2.2
 [0.2.1]: https://github.com/JaimeStill/spike-html-apps-foundation/compare/v0.2.0...v0.2.1
