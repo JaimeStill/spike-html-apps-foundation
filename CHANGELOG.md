@@ -6,6 +6,14 @@ follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), and the packag
 
 ## [Unreleased]
 
+### Added
+
+- A second color hook, `--accent-color`, beside `--interaction-color` and by the same mechanism:
+  the baseline reads it as `var(--accent-color, var(--magenta))` and no profile declares it. It
+  marks what is current, active, or in progress, where `--interaction-color` marks what you can
+  act on. Native `progress` follows it: its `accent-color` is now the palette's `--magenta` by
+  default, where it was `--blue`; checkboxes, radios, and ranges stay on `--interaction-color`.
+
 ## [0.2.3] - 2026-10-31
 
 ### Fixed

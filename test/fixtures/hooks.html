@@ -1,0 +1,44 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <title>hooks fixture</title>
+    <link rel="stylesheet" href="../../dist/page-full.css" />
+    <style>
+      @layer foundation, app;
+      @layer app {
+        .accented {
+          --accent-color: rgb(1, 2, 3);
+        }
+        .interacting {
+          --interaction-color: rgb(4, 5, 6);
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <h1>hooks fixture</h1>
+    <p>
+      Each group holds a progress bar, a checkbox, and a link. The first sets no hook, the second
+      sets --accent-color on its subtree, and the third sets --interaction-color on its subtree.
+      The probes read the palette's --magenta and --blue as a color.
+    </p>
+    <div id="plain">
+      <progress value="40" max="100"></progress>
+      <input type="checkbox" checked aria-label="plain" />
+      <a href="#plain">plain</a>
+    </div>
+    <div id="accented" class="accented">
+      <progress value="40" max="100"></progress>
+      <input type="checkbox" checked aria-label="accented" />
+      <a href="#accented">accented</a>
+    </div>
+    <div id="interacting" class="interacting">
+      <progress value="40" max="100"></progress>
+      <input type="checkbox" checked aria-label="interacting" />
+      <a href="#interacting">interacting</a>
+    </div>
+    <span id="magenta" style="color: var(--magenta)">magenta</span>
+    <span id="blue" style="color: var(--blue)">blue</span>
+  </body>
+</html>

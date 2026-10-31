@@ -12,6 +12,9 @@
  * Upstream's remarks on its entries describe upstream: here the file layers itself, imports
  * nothing, and the foundation's baseline.css imports it. The port is this repository's own code:
  * Prettier formats it, and no test holds it to upstream.
+ *
+ * One rule is the foundation's own: progress takes the --accent-color hook below, where upstream's
+ * progress takes the interaction color with every other element.
  */
 
 /*
@@ -38,7 +41,7 @@
  *
  * Fonts and leadings read the type facet's role tokens, spacing reads the space scale, and
  * border and outline widths read the line tokens. Colors read tiers and hues by name, apart from
- * three hooks below; the native button is neutral, built from tiers alone. Control boundaries
+ * four hooks below; the native button is neutral, built from tiers alone. Control boundaries
  * (text fields, selects, buttons, dialogs, kbd) take --border-2; dividers and containers take
  * --border; table headers sit on the element surface, --bg-2. Everything is flat: borders, no
  * shadows, no gradients.
@@ -47,10 +50,13 @@
  * a fallback and never declares, nor does any profile, so a consumer sets one on any element, in
  * its own layer or a style attribute, and everything that reads it in that subtree follows:
  *
- *   --interaction-color  links, the focus outline, the caret, accent-color, selected text's 30%
- *                        mix, and the hover border of text fields, selects, text areas and
- *                        neutral buttons (the tools layer's .button reads it too); by default
- *                        --blue.
+ *   --interaction-color  what you can act on: links, the focus outline, the caret,
+ *                        accent-color on every element but progress, selected text's 30% mix,
+ *                        and the hover border of text fields, selects, text areas and neutral
+ *                        buttons (the tools layer's .button reads it too); by default --blue.
+ *   --accent-color       what is current, active, or in progress, emphasis that reports state
+ *                        rather than inviting interaction: progress's accent-color; by default
+ *                        --magenta.
  *   --code-color         inline code's text; by default --green.
  *   --kbd-color          kbd's border and text; by default --border-2 for the border and --fg
  *                        for the text.
@@ -59,6 +65,9 @@
  *   @layer app {
  *     .danger-zone { --interaction-color: var(--red); }
  *   }
+ *
+ * The --accent-color hook shares its name with the CSS property accent-color, which follows
+ * --interaction-color on every element except progress, where it follows --accent-color.
  *
  * A hook is read on the element that uses it, never inherited as a resolved color from the body,
  * so it resolves in that element's own palette and scheme, inside a data-palette or data-scheme
@@ -80,12 +89,19 @@
   }
 
   /* Every element sets its own caret and accent from the interaction hook, so every text field's
-     caret and every checkbox, radio, range and progress takes it. Both properties inherit, but as a
-     resolved color: set once on the body, they would keep the page's palette and scheme inside a
-     scope, and ignore a hook set on an element below the body. */
+     caret and every checkbox, radio and range takes it. Both properties inherit, but as a resolved
+     color: set once on the body, they would keep the page's palette and scheme inside a scope, and
+     ignore a hook set on an element below the body. */
   :where(*) {
     caret-color: var(--interaction-color, var(--blue));
     accent-color: var(--interaction-color, var(--blue));
+  }
+
+  /* Progress reports state rather than inviting interaction, so its accent-color follows the
+     accent hook instead. It comes after the rule above, at the same zero specificity, and wins by
+     order. */
+  :where(progress) {
+    accent-color: var(--accent-color, var(--magenta));
   }
 
   /* Selected text sits on a translucent mix of the interaction color, so the text keeps its own
@@ -360,9 +376,9 @@
   }
 
   /* Forms. Text fields, selects and text areas share one outlined look; checkboxes, radios,
-     ranges, color wells, progress and meter keep their native look. Checkboxes, radios, ranges
-     and progress take the accent color every element sets; accent-color doesn't reach a color
-     well or meter. */
+     ranges, color wells, progress and meter keep their native look. Checkboxes, radios and ranges
+     take the accent-color every element sets from --interaction-color; progress takes its own,
+     from --accent-color; accent-color doesn't reach a color well or meter. */
 
   :where(
     input:not(

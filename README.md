@@ -64,8 +64,17 @@ the modules by their `.js` subpaths. The lean entry, `page.css`, carries the def
 The primary interaction color is the hook `--interaction-color`, which the baseline and
 `meta.css` read with `--blue` as its fallback and no profile declares. Links, the focus outline,
 the caret, selected text, the hover border of fields and neutral buttons, and `accent-color`, which
-tints checkboxes, radios, ranges, and progress bars, all follow it. A page sets it on any element,
+tints checkboxes, radios, and ranges, all follow it. A page sets it on any element,
 in its own layer, and that subtree follows: `.danger-zone { --interaction-color: var(--red); }`.
+
+Beside it, the accent color is the hook `--accent-color`, read the same way with `--magenta` as
+its fallback and declared by no profile. Where `--interaction-color` marks what you can act on,
+`--accent-color` marks what is current, active, or in progress: emphasis that reports state rather
+than inviting interaction. In the baseline, native `progress` follows it. A page sets it on any
+element in its own layer, and per palette if it wants:
+`:where([data-palette="primer"]) { --accent-color: var(--purple); }`. The hook shares its name with
+the CSS property: `accent-color` follows `--interaction-color` on every element except `progress`,
+where it follows `--accent-color`.
 
 A package outside the foundation adds a profile as a built-in unit does: a sheet that declares
 its facet's tokens in one `:where([data-<attribute>="<name>"])` block inside that facet's layer,

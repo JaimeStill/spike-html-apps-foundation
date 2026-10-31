@@ -28,8 +28,11 @@
  * that order.
  *
  * --fg, --fg-2 and --fg-3 are text, from the strongest down. There are no role tokens: a hue
- * carries no meaning, so a page that wants an accent, a success, or a danger color reads the hue
- * it means by name, or sets its own token in its own layer.
+ * carries no meaning, so a page that wants a success or a danger color reads the hue it means by
+ * name, or sets its own token in its own layer. The two roles the baseline colors by are hooks,
+ * not tokens, read with a hue as the fallback and declared by no profile: --interaction-color,
+ * what you can act on, by default --blue, and --accent-color, what is current, active, or in
+ * progress, by default --magenta. The elements layer lists them.
  *
  * A profile is one palette's values for the sixteen tokens, each in its own file under
  * layers/tokens/color/, imported into this same sub-layer and applied by data-palette on any
