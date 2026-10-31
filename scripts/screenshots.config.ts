@@ -1,9 +1,9 @@
 // mise run screenshots' capture description, which the tooling's spike-html-apps-screenshots bin
-// runs: the tools page whole, keys help open, and the theme menu open wide and narrow, each with
-// the stylesheet pointed at page-full.css, its registration module imported, and the profile's
-// attributes set on the root, as demo/profiles.html does, so no demo page changes; the profiles
-// each page then registers, from the registry. The bin's flags choose the profiles, pages,
-// schemes, and output.
+// runs: the tools page whole, keys help open, the theme menu open wide and narrow, and the hooks
+// page whole, each with the stylesheet pointed at page-full.css, its registration module
+// imported, and the profile's attributes set on the root, as demo/profiles.html does, so no demo
+// page changes; the profiles each page then registers, from the registry. The bin's flags choose
+// the profiles, pages, schemes, and output.
 // Adapted from spike-html-apps-foundation (9c15b8d): scripts/screenshots.js, its states, profiles,
 // and open steps as a Description.
 
@@ -103,6 +103,9 @@ const description: Description = {
         },
       ],
     },
+    // One full-page capture; the bin focuses the page's data-focus-start range and presses Tab,
+    // which reaches the field and selects its text.
+    { name: "hooks", caption: "the color hooks", path: "demo/hooks.html" },
   ],
   facets: [
     { flag: "palette", attribute: "data-palette", default: "flexoki" },

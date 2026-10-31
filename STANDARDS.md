@@ -15,7 +15,9 @@ The architecture pages that apply, in the architecture repository:
 ## Design
 
 - spike-html-design v0.7.0 is the visual baseline: native elements keep its styling, and every
-  profile renders as it does there.
+  profile renders as it does there. The one deliberate exception: native `progress` takes
+  `--accent-color`, magenta by default, where v0.7.0's takes the interaction color, because
+  progress reports state rather than inviting interaction.
 - A sheet is finished in every profile the baseline carries, light and dark.
 - Focus is always visible, motion is brief and honours reduced motion, and nothing shifts layout.
 - Density, alignment, and spacing in the tool sheets come from the tokens, never a literal.

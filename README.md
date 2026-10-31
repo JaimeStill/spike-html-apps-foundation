@@ -97,10 +97,11 @@ mise run currency     # report every tool, package, action pin, and tooling tag 
 
 The demo pages, in `demo/`, are `tools.html` (every tool class), `profiles.html` (the tools page
 switched through every profile), `theme.html` (the theme menu on `page-full.css`), `unit.html`
-(`page.css` with the Primer unit), `keys.html`, and `format.html`. Page layout belongs to the
+(`page.css` with the Primer unit), `keys.html`, `format.html`, and `hooks.html` (the two color
+hooks, at their fallbacks and overridden). Page layout belongs to the
 consumer, so each page links `demo.css`, a `demo` layer of its own that lays out the column and
-its sections. `mise run screenshots` renders the tools page, keys help, and the theme menu, wide
-and narrow, light and dark, on `page-full.css`. It runs the `spike-html-apps-screenshots` bin of
+its sections. `mise run screenshots` renders the tools page, keys help, the theme menu, wide
+and narrow, and the hooks page, light and dark, on `page-full.css`. It runs the `spike-html-apps-screenshots` bin of
 [spike-html-apps-tooling](https://github.com/JaimeStill/spike-html-apps-tooling), the
 devDependency the browser tier's driver and server also come from, over the capture description
 in `scripts/screenshots.config.ts`, and passes its arguments on. With none it captures the default
