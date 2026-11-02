@@ -11,8 +11,8 @@ follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), and the packag
 ### Removed
 
 - The unit tier's brotli budget check, which failed the check when the pack's runtime files, each
-  compressed alone with brotli, summed over 48,000 B. The layer's size is now measured, at the end
-  of a session's work, not enforced per commit.
+  compressed alone with brotli, summed over 48,000 B. The layer's size is now measured as a whole
+  bundle, not enforced per commit.
 
 ## [0.3.0] - 2026-10-31
 
