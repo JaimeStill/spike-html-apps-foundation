@@ -8,8 +8,9 @@
   <body>
     <h1>backdrop fixture</h1>
     <p>
-      A modal dialog with a hint popover inside it, and a popover of each kind on the page. The
-      probe's background is the veil a modal dialog's backdrop takes.
+      A modal dialog with a hint popover inside it, a popover of each kind on the page, and an
+      element to show fullscreen. The probe's background is the veil a modal dialog's backdrop
+      takes.
     </p>
     <dialog id="modal">
       <p>A modal dialog.</p>
@@ -18,6 +19,7 @@
     <div id="hint" popover="hint">A hint.</div>
     <div id="auto" popover="auto">An auto popover.</div>
     <div id="manual" popover="manual">A manual popover.</div>
+    <div id="fullscreen">An element shown fullscreen.</div>
     <span
       id="veil"
       style="background-color: color-mix(in srgb, var(--bg) 80%, transparent)"

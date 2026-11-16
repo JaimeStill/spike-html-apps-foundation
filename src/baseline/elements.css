@@ -15,7 +15,8 @@
  *
  * Two rules are the foundation's own: progress takes the --accent-color hook below, where upstream's
  * progress takes the interaction color with every other element; and the veil goes on a modal
- * dialog's ::backdrop alone, where upstream's bare ::backdrop veils every popover's too.
+ * dialog's ::backdrop alone, where upstream's bare ::backdrop veils every top-layer element's, a
+ * popover's or a fullscreen element's, too.
  */
 
 /*
@@ -496,9 +497,10 @@
   }
 
   /* A modal dialog veils the page in its own surface, so the page behind recedes in either
-     scheme. Only a modal dialog's: a popover in the top layer (hint, auto or manual) has a
-     ::backdrop too, which stays chromium's transparent, so a hint shown on hover, or inside an
-     open dialog, leaves the page and the dialog as they are. */
+     scheme. Only a modal dialog's: every other top-layer element has a ::backdrop too, which
+     keeps chromium's own. A popover's (hint, auto or manual) stays transparent, so a hint shown
+     on hover, or inside an open dialog, leaves the page and the dialog as they are; a fullscreen
+     element's stays black, as the platform covers the page behind it. */
   :where(dialog:modal)::backdrop {
     background-color: color-mix(in srgb, var(--bg) 80%, transparent);
   }

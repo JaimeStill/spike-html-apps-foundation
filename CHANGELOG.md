@@ -11,10 +11,13 @@ follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), and the packag
 ### Fixed
 
 - Only a modal dialog veils the page. The baseline's veil, the page's `--bg` at 80%, went on every
-  `::backdrop`, so a popover in the top layer took it too: hovering a glyph button's hint popover
+  `::backdrop`, so a popover in the top layer took it too: a hint popover shown on hover
   veiled the whole page, and a hint inside an open dialog washed the dialog out. It now goes on a
   modal dialog's backdrop alone, and a popover's backdrop, hint, auto, or manual, stays
   transparent, in every palette and scheme.
+- A fullscreen element's backdrop is the platform's black. The same veil went on it, so the
+  page showed through behind the element; it now keeps chromium's own, as every top-layer
+  element but a modal dialog does.
 
 ## [0.3.0] - 2026-10-31
 
