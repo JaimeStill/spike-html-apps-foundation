@@ -1,0 +1,26 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <title>backdrop fixture</title>
+    <link rel="stylesheet" href="../../dist/page-full.css" />
+  </head>
+  <body>
+    <h1>backdrop fixture</h1>
+    <p>
+      A modal dialog with a hint popover inside it, and a popover of each kind on the page. The
+      probe's background is the veil a modal dialog's backdrop takes.
+    </p>
+    <dialog id="modal">
+      <p>A modal dialog.</p>
+      <div id="dialog-hint" popover="hint">A hint inside the dialog.</div>
+    </dialog>
+    <div id="hint" popover="hint">A hint.</div>
+    <div id="auto" popover="auto">An auto popover.</div>
+    <div id="manual" popover="manual">A manual popover.</div>
+    <span
+      id="veil"
+      style="background-color: color-mix(in srgb, var(--bg) 80%, transparent)"
+    ></span>
+  </body>
+</html>

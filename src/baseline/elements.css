@@ -13,8 +13,9 @@
  * nothing, and the foundation's baseline.css imports it. The port is this repository's own code:
  * Prettier formats it, and no test holds it to upstream.
  *
- * One rule is the foundation's own: progress takes the --accent-color hook below, where upstream's
- * progress takes the interaction color with every other element.
+ * Two rules are the foundation's own: progress takes the --accent-color hook below, where upstream's
+ * progress takes the interaction color with every other element; and the veil goes on a modal
+ * dialog's ::backdrop alone, where upstream's bare ::backdrop veils every popover's too.
  */
 
 /*
@@ -495,8 +496,10 @@
   }
 
   /* A modal dialog veils the page in its own surface, so the page behind recedes in either
-     scheme. */
-  ::backdrop {
+     scheme. Only a modal dialog's: a popover in the top layer (hint, auto or manual) has a
+     ::backdrop too, which stays chromium's transparent, so a hint shown on hover, or inside an
+     open dialog, leaves the page and the dialog as they are. */
+  :where(dialog:modal)::backdrop {
     background-color: color-mix(in srgb, var(--bg) 80%, transparent);
   }
 }
