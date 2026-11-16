@@ -55,7 +55,7 @@ function by(rules: string[], files: Record<string, string>): Record<string, Case
 // Each file holds one import, named for what it imports.
 export const violations = {
   // Any package by name: the manifest declares no dependency, and the table allows no package. A
-  // devDependency ships nothing, and the package's own name resolves to its build, not its src/.
+  // devDependency ships nothing.
   ...by([table, extraneous], {
     "src/lit.ts": `import { html } from "lit";`,
     ...forms("src/forms/lit", "lit"),
@@ -63,8 +63,11 @@ export const violations = {
     ...forms("src/forms/sdk", `${siblings[1]}/client.js`),
     "src/app.ts": `import { define } from "${app}/main.js";`,
     ...forms("src/forms/typescript", "typescript"),
-    ...forms("src/forms/self-name", `${foundation}/dom.js`),
   }),
+  // The package's own name, which resolves to its build, not its src/: the table alone catches it,
+  // since no-extraneous-dependencies (from eslint-plugin-import-x 4.18.0) passes a self-import in a
+  // package whose manifest has an exports field, as Node resolves one.
+  ...by([table], forms("src/forms/self-name", `${foundation}/dom.js`)),
   // A package by a relative path into node_modules/.
   ...by([table, relativePackages], {
     "src/lit-path.ts": `import "../node_modules/lit/index.js";`,
