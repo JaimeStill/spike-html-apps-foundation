@@ -90,9 +90,10 @@ export default defineConfig([
     rules: {
       "import-x/no-unresolved": "error",
       // Each judges an import against package.json: a package name it doesn't declare in
-      // dependencies, which it holds none of (a devDependency ships nothing, and includeInternal
-      // holds the package's own name, which resolves inside it, to the same), in every import form
-      // (includeTypes), and a relative path that reaches another package's files.
+      // dependencies, which it holds none of (a devDependency ships nothing), in every import form
+      // (includeTypes), an internal one among them (includeInternal), and a relative path that
+      // reaches another package's files. The package's own name passes here, since the
+      // manifest has an exports field; boundaries/dependencies refuses it, as it resolves to dist/.
       "import-x/no-extraneous-dependencies": [
         "error",
         { devDependencies: false, includeInternal: true, includeTypes: true },

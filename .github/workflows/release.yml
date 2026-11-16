@@ -35,7 +35,7 @@ jobs:
           fi
 
       - if: steps.version.outputs.released == 'false'
-        uses: jdx/mise-action@v5.2.5
+        uses: jdx/mise-action@v5.2.9
 
       - name: mise run install
         if: steps.version.outputs.released == 'false'
@@ -79,7 +79,7 @@ jobs:
 
       - name: Create the GitHub release
         if: steps.version.outputs.released == 'false'
-        uses: taiki-e/create-gh-release-action@v1.11.0
+        uses: taiki-e/create-gh-release-action@v1.12.0
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
           changelog: CHANGELOG.md
